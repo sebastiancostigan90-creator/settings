@@ -3,159 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Настройки RP</title>
+    <title>RP Config V2</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --accent: #00d4ff; /* Неоновый голубой */
-            --danger: #ff4b4b;
+            --bg: #0f0f13;
+            --card: #18181e;
+            --input: #252530;
+            --accent: #00f3ff;
+            --text: #e0e0e0;
+            --text-sec: #888899;
+            --danger: #ff2a6d;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            margin: 0; padding: 16px;
+            padding-bottom: 80px; /* Место для кнопки */
         }
 
-        h2 { margin-top: 0; font-size: 18px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        h2 { font-size: 14px; color: var(--text-sec); text-transform: uppercase; margin: 20px 0 10px 5px; letter-spacing: 1px; }
         
         .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            background-color: var(--card);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             border: 1px solid #333;
         }
 
-        label { display: block; margin-bottom: 8px; font-size: 14px; opacity: 0.8; }
+        label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--accent); }
         
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 12px;
-            background: #2c2c2c;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            box-sizing: border-box; /* Важно для отступов */
-            outline: none;
-        }
-        
-        input:focus, textarea:focus { border-color: var(--accent); }
-
-        /* Стили для радио-кнопок (выбор режима) */
-        .radio-group { display: flex; gap: 10px; }
-        .radio-label {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            background: #2c2c2c;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
+        input[type="text"], textarea, select {
+            width: 100%; padding: 12px;
+            background: var(--input);
+            border: 1px solid #444; border-radius: 10px;
+            color: white; font-size: 15px;
+            box-sizing: border-box; outline: none;
             transition: 0.2s;
-            border: 1px solid #444;
         }
+        input:focus, textarea:focus { border-color: var(--accent); background: #2a2a35; }
 
-        input[type="radio"] { display: none; }
-        input[type="radio"]:checked + .radio-label {
-            background: var(--accent);
-            color: #000;
-            font-weight: bold;
-            border-color: var(--accent);
-        }
-
-        input[type="radio"][value="nsfw"]:checked + .radio-label {
-            background: var(--danger); /* Красный для NSFW */
-            border-color: var(--danger);
-        }
-
-        /* Ползунок */
-        .slider-container { margin-top: 10px; }
+        /* Range Slider Styling */
         input[type="range"] {
-            width: 100%;
-            accent-color: var(--accent);
+            width: 100%; -webkit-appearance: none; background: transparent; margin: 10px 0;
         }
-        .slider-value { text-align: right; font-size: 12px; color: var(--accent); }
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%; height: 6px; background: #333; border-radius: 3px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 18px; width: 18px;
+            background: var(--accent); border-radius: 50%;
+            margin-top: -6px; box-shadow: 0 0 10px var(--accent);
+        }
+        .range-val { text-align: right; font-size: 12px; color: var(--text-sec); margin-bottom: 10px;}
 
-        #main-btn {
-            display: none; /* Скрываем, так как используем MainButton Телеграма */
+        /* Radio Buttons as Chips */
+        .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+        .chip-label {
+            padding: 8px 16px; background: var(--input);
+            border-radius: 20px; font-size: 13px; cursor: pointer;
+            border: 1px solid #444; white-space: nowrap; flex: 1; text-align: center;
         }
+        input[type="radio"] { display: none; }
+        input[type="radio"]:checked + .chip-label {
+            background: rgba(0, 243, 255, 0.15);
+            border-color: var(--accent); color: var(--accent);
+            font-weight: bold;
+        }
+        
+        /* Danger Zone (NSFW) */
+        .danger-mode input[type="radio"]:checked + .chip-label {
+            background: rgba(255, 42, 109, 0.15);
+            border-color: var(--danger); color: var(--danger);
+        }
+
     </style>
 </head>
 <body>
 
-    <!-- Секция 1: Роль -->
+    <!-- 1. ИДЕНТИФИКАЦИЯ -->
+    <h2>👤 Личность</h2>
     <div class="card">
-        <h2>👤 Ваш Профиль</h2>
-        <label>Имя в истории</label>
-        <input type="text" id="user_name" placeholder="Например: Алекс">
+        <label>Имя персонажа</label>
+        <input type="text" id="user_name" placeholder="Как вас зовут?">
         
-        <label style="margin-top: 15px;">Описание / Внешность</label>
-        <textarea id="user_desc" rows="3" placeholder="Высокий, шрам на лице, детектив..."></textarea>
+        <label style="margin-top: 15px;">Ваша роль</label>
+        <input type="text" id="user_role" placeholder="Студент, Детектив, Жертва...">
+
+        <label style="margin-top: 15px;">Внешность / Детали</label>
+        <textarea id="user_desc" rows="2" placeholder="Блондин, шрам на щеке, носит очки..."></textarea>
     </div>
 
-    <!-- Секция 2: Настройки чата -->
+    <!-- 2. МИР И СЮЖЕТ -->
+    <h2>🌍 Мир и Сюжет</h2>
     <div class="card">
-        <h2>⚙️ Параметры</h2>
+        <label>Место действия (Сеттинг)</label>
+        <textarea id="setting" rows="2" placeholder="Средневековый замок, Киберпанк-город, Офис..."></textarea>
+
+        <label style="margin-top: 15px;">Второстепенные персонажи (NPC)</label>
+        <div class="chips">
+            <label><input type="radio" name="npc" value="none"><div class="chip-label">Запрещены 🚫</div></label>
+            <label><input type="radio" name="npc" value="low" checked><div class="chip-label">Иногда 👤</div></label>
+            <label><input type="radio" name="npc" value="high"><div class="chip-label">Много 👥</div></label>
+        </div>
+    </div>
+
+    <!-- 3. ДИНАМИКА -->
+    <h2>⚡ Динамика</h2>
+    <div class="card">
+        <label>Длина сообщений</label>
+        <input type="range" id="msg_len" min="1" max="3" step="1" value="2">
+        <div class="range-val" id="len_txt">Средние (Баланс)</div>
+
+        <label>Инициатива бота</label>
+        <div class="chips">
+            <label><input type="radio" name="initiative" value="passive"><div class="chip-label">Ждет действий 🛡️</div></label>
+            <label><input type="radio" name="initiative" value="balanced" checked><div class="chip-label">Баланс ⚖️</div></label>
+            <label><input type="radio" name="initiative" value="active"><div class="chip-label">Ведет сюжет 🗡️</div></label>
+        </div>
+    </div>
+
+    <!-- 4. ИНТИМ / РОМАНТИКА -->
+    <h2>💖 Романтика & NSFW</h2>
+    <div class="card">
         <label>Режим контента</label>
-        <div class="radio-group">
-            <label>
-                <input type="radio" name="mode" value="sfw" checked>
-                <div class="radio-label">Romance 💖</div>
-            </label>
-            <label>
-                <input type="radio" name="mode" value="nsfw">
-                <div class="radio-label">Adult 🔞</div>
-            </label>
+        <div class="chips danger-mode">
+            <label><input type="radio" name="mode" value="sfw" checked><div class="chip-label">SFW (Мило) 🌸</div></label>
+            <label><input type="radio" name="mode" value="nsfw"><div class="chip-label">NSFW (18+) 🔥</div></label>
         </div>
 
-        <label style="margin-top: 20px;">Длина ответов бота</label>
-        <input type="range" id="msg_len" min="1" max="3" step="1" value="2">
-        <div class="slider-value" id="len_text">Средние</div>
+        <div id="romance_block" style="margin-top: 15px;">
+            <label>Интенсивность чувств</label>
+            <input type="range" id="romance_lvl" min="1" max="4" step="1" value="2">
+            <div class="range-val" id="rom_txt">Флирт</div>
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрыть на весь экран
-
-        // Настройка главной кнопки (MainButton)
-        tg.MainButton.text = "СОХРАНИТЬ НАСТРОЙКИ";
-        tg.MainButton.color = "#00d4ff"; 
-        tg.MainButton.textColor = "#000000";
+        tg.expand();
+        tg.MainButton.text = "ПРИМЕНИТЬ НАСТРОЙКИ";
+        tg.MainButton.color = "#00f3ff"; tg.MainButton.textColor = "#000";
         tg.MainButton.show();
 
-        // Логика ползунка
-        const slider = document.getElementById('msg_len');
-        const lenText = document.getElementById('len_text');
-        const lenMap = {1: "Короткие (Чат)", 2: "Средние (RP)", 3: "Длинные (Книга)"};
-        
-        slider.oninput = function() {
-            lenText.innerHTML = lenMap[this.value];
-        }
+        // Слайдеры (Текст)
+        const lenMap = {1: "Короткие (Чат)", 2: "Средние (Баланс)", 3: "Длинные (Книга)"};
+        document.getElementById('msg_len').oninput = function() { document.getElementById('len_txt').innerText = lenMap[this.value]; }
 
-        // ОТПРАВКА ДАННЫХ БОТУ
+        const romMap = {1: "Скрытая симпатия", 2: "Флирт и намеки", 3: "Страсть", 4: "Безумие/Одержимость"};
+        document.getElementById('romance_lvl').oninput = function() { document.getElementById('rom_txt').innerText = romMap[this.value]; }
+
+        // ОТПРАВКА
         Telegram.WebApp.onEvent('mainButtonClicked', function(){
             const data = {
                 user_name: document.getElementById('user_name').value,
+                user_role: document.getElementById('user_role').value,
                 user_desc: document.getElementById('user_desc').value,
+                setting: document.getElementById('setting').value,
+                npc: document.querySelector('input[name="npc"]:checked').value,
+                msg_len: document.getElementById('msg_len').value,
+                initiative: document.querySelector('input[name="initiative"]:checked').value,
                 mode: document.querySelector('input[name="mode"]:checked').value,
-                length_mode: slider.value
+                romance: document.getElementById('romance_lvl').value
             };
             
-            // Валидация
-            if(!data.user_name) {
-                tg.showPopup({title: 'Ошибка', message: 'Введите имя!'});
-                return;
-            }
-
+            if(!data.user_name) { tg.showPopup({title: 'Ошибка', message: 'Введите имя!'}); return; }
             tg.sendData(JSON.stringify(data)); 
         });
     </script>
