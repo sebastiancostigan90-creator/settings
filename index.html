@@ -61,7 +61,7 @@
         }
         .range-val { text-align: right; font-size: 13px; color: var(--text-sec); margin-bottom: 5px; font-weight: 500;}
 
-        /* Chips (Кнопки выбора) */
+        /* Chips */
         .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
         .chip-label {
             padding: 10px 16px; background: var(--input);
@@ -70,14 +70,12 @@
         }
         input[type="radio"] { display: none; }
         
-        /* Активное состояние */
         input[type="radio"]:checked + .chip-label {
             background: rgba(0, 243, 255, 0.15);
             border-color: var(--accent); color: var(--accent);
             font-weight: bold;
         }
         
-        /* Стиль для режима 18+ */
         .danger-mode input[type="radio"][value="nsfw"]:checked + .chip-label {
             background: rgba(255, 42, 109, 0.15);
             border-color: var(--danger); color: var(--danger);
@@ -121,14 +119,6 @@
         <label>Длина ответов</label>
         <input type="range" id="msg_len" min="1" max="3" step="1" value="2">
         <div class="range-val" id="len_txt">Средние (Баланс)</div>
-
-        <label style="margin-top: 10px;">Инициатива</label>
-        <div class="hint">Кто двигает сюжет вперед?</div>
-        <div class="chips">
-            <label><input type="radio" name="initiative" value="passive"><div class="chip-label">Бот ждет 🛡️</div></label>
-            <label><input type="radio" name="initiative" value="balanced" checked><div class="chip-label">Вместе ⚖️</div></label>
-            <label><input type="radio" name="initiative" value="active"><div class="chip-label">Бот ведет 🗡️</div></label>
-        </div>
     </div>
 
     <!-- 4. ЖАНР И ЦЕНЗУРА -->
@@ -136,7 +126,6 @@
     <div class="card">
         <label>Режим истории</label>
         <div class="chips danger-mode">
-            <!-- В коде оставили values sfw/nsfw для базы данных, но пользователю пишем понятно -->
             <label><input type="radio" name="mode" value="sfw" checked><div class="chip-label">Сюжет и Романтика 🌸</div></label>
             <label><input type="radio" name="mode" value="nsfw"><div class="chip-label">Откровенно (18+) 🔥</div></label>
         </div>
@@ -155,14 +144,12 @@
         tg.MainButton.color = "#00f3ff"; tg.MainButton.textColor = "#000";
         tg.MainButton.show();
 
-        // Понятные тексты для слайдеров
         const lenMap = {1: "Короткие (Чат)", 2: "Средние (Оптимально)", 3: "Длинные (Книга)"};
         document.getElementById('msg_len').oninput = function() { document.getElementById('len_txt').innerText = lenMap[this.value]; }
 
         const romMap = {1: "Скрытая симпатия", 2: "Легкий флирт", 3: "Яркая страсть", 4: "Безумие / Одержимость"};
         document.getElementById('romance_lvl').oninput = function() { document.getElementById('rom_txt').innerText = romMap[this.value]; }
 
-        // Отправка данных
         Telegram.WebApp.onEvent('mainButtonClicked', function(){
             const data = {
                 user_name: document.getElementById('user_name').value,
@@ -171,7 +158,7 @@
                 setting: document.getElementById('setting').value,
                 npc: document.querySelector('input[name="npc"]:checked').value,
                 msg_len: document.getElementById('msg_len').value,
-                initiative: document.querySelector('input[name="initiative"]:checked').value,
+                // initiative удалили отсюда
                 mode: document.querySelector('input[name="mode"]:checked').value,
                 romance: document.getElementById('romance_lvl').value
             };
