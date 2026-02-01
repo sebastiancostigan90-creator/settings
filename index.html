@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Настройки Истории</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Настройки Вселенной</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -19,9 +19,9 @@
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Segoe UI', sans-serif;
+            font-family: -apple-system, system-ui, sans-serif;
             margin: 0; padding: 16px;
-            padding-bottom: 100px;
+            padding-bottom: 120px;
         }
 
         h2 { font-size: 13px; color: var(--text-sec); text-transform: uppercase; margin: 20px 0 10px 5px; letter-spacing: 1px; }
@@ -35,6 +35,7 @@
         }
 
         label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--accent); }
+        .hint { font-size: 11px; color: #555; margin-bottom: 8px; margin-top: -4px; }
         
         input[type="text"], textarea {
             width: 100%; padding: 12px;
@@ -46,9 +47,9 @@
 
         .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
         .chip-label {
-            padding: 10px 16px; background: var(--input);
-            border-radius: 12px; font-size: 13px; cursor: pointer;
-            border: 1px solid #444; flex: 1; text-align: center;
+            padding: 10px 14px; background: var(--input);
+            border-radius: 12px; font-size: 12px; cursor: pointer;
+            border: 1px solid #444; flex: 1; text-align: center; white-space: nowrap;
         }
         input[type="radio"] { display: none; }
         input[type="radio"]:checked + .chip-label {
@@ -59,74 +60,76 @@
 
         .btn-gold {
             background: var(--gold);
-            color: #000; width: 100%; padding: 14px;
-            border: none; border-radius: 12px;
+            color: #000; width: 100%; padding: 15px;
+            border: none; border-radius: 14px;
             font-weight: bold; cursor: pointer; font-size: 15px;
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.2);
         }
 
-        input[type="range"] { width: 100%; accent-color: var(--accent); }
-        .val-disp { text-align: right; font-size: 12px; color: var(--text-sec); margin-top: 5px; }
+        input[type="range"] { width: 100%; accent-color: var(--accent); margin: 10px 0; }
+        .val-disp { text-align: right; font-size: 12px; color: var(--text-sec); }
     </style>
 </head>
 <body>
 
     <h2>👤 Ваш Герой</h2>
     <div class="card">
-        <label>Имя</label>
+        <label>Ваше Имя</label>
         <input type="text" id="user_name" placeholder="Напр: Алиса">
         
-        <label style="margin-top:15px">Роль / Профессия</label>
-        <input type="text" id="user_role" placeholder="Студентка, Детектив...">
+        <label style="margin-top:15px">Ваша Роль</label>
+        <input type="text" id="user_role" placeholder="Студентка, Хакер, Пленница...">
 
-        <label style="margin-top:15px">Внешность</label>
-        <textarea id="user_desc" rows="2" placeholder="Опишите детали..."></textarea>
+        <label style="margin-top:15px">Внешность и черты</label>
+        <textarea id="user_desc" rows="2" placeholder="Опишите себя..."></textarea>
     </div>
 
-    <h2>🌍 Мир</h2>
+    <h2>🌍 Мир и Герои</h2>
     <div class="card">
-        <label>Где вы сейчас?</label>
-        <textarea id="setting" rows="2" placeholder="Офис, Лес, Другая планета..."></textarea>
+        <label>Место действия</label>
+        <textarea id="setting" rows="2" placeholder="Где вы сейчас?"></textarea>
 
-        <label style="margin-top:15px">Другие персонажи</label>
+        <label style="margin-top:15px">Второстепенные персонажи</label>
         <div class="chips">
-            <label><input type="radio" name="npc" value="none"><div class="chip-label">Нет героев</div></label>
-            <label><input type="radio" name="npc" value="low" checked><div class="chip-label">Иногда</div></label>
-            <label><input type="radio" name="npc" value="high"><div class="chip-label">Толпа</div></label>
+            <label><input type="radio" name="npc" value="none"><div class="chip-label">Только мы 🔒</div></label>
+            <label><input type="radio" name="npc" value="low" checked><div class="chip-label">Иногда 👤</div></label>
+            <label><input type="radio" name="npc" value="high"><div class="chip-label">Толпа 👥</div></label>
         </div>
     </div>
 
-    <h2>🎭 Стиль игры</h2>
+    <h2>🎭 Стиль Повествования</h2>
     <div class="card">
-        <label>Длина ответов бота</label>
+        <label>Длина сообщений бота</label>
         <input type="range" id="msg_len" min="1" max="3" step="1" value="2">
         <div class="val-disp" id="len_txt">Средние (Баланс)</div>
 
-        <label style="margin-top:15px">Режим</label>
+        <label style="margin-top:15px">Режим Контента</label>
         <div class="chips">
-            <label><input type="radio" name="mode" value="sfw" checked><div class="chip-label">Романтика</div></label>
+            <label><input type="radio" name="mode" value="sfw" checked><div class="chip-label">Романтика 🌸</div></label>
             <label><input type="radio" name="mode" value="nsfw"><div class="chip-label">18+ 🔥</div></label>
         </div>
 
-        <label style="margin-top:15px">Интенсивность страсти</label>
+        <label style="margin-top:15px">Уровень Страсти</label>
         <input type="range" id="romance_lvl" min="1" max="4" step="1" value="2">
         <div class="val-disp" id="rom_txt">Легкий флирт</div>
     </div>
 
-    <h2>💎 VIP Статус</h2>
-    <div class="card" style="border-color: var(--gold);">
+    <h2>💎 Магазин CharmyAI</h2>
+    <div class="card" style="border-color: var(--gold); background: rgba(255,204,0,0.05);">
+        <p style="font-size: 12px; margin-bottom: 12px; text-align: center; color: var(--gold);">Снимите лимиты и откройте 18+ навсегда</p>
         <button class="btn-gold" id="buy_btn">СТАТЬ VIP — 250 ⭐</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.MainButton.text = "СОХРАНИТЬ ИЗМЕНЕНИЯ";
+        tg.MainButton.text = "ПРИМЕНИТЬ НАСТРОЙКИ";
         tg.MainButton.show();
 
-        const lenMap = {1: "Короткие", 2: "Средние", 3: "Длинные"};
+        const lenMap = {1: "Короткие (Чат)", 2: "Средние (Баланс)", 3: "Длинные (Книга)"};
         document.getElementById('msg_len').oninput = function() { document.getElementById('len_txt').innerText = lenMap[this.value]; }
         
-        const romMap = {1: "Симпатия", 2: "Флирт", 3: "Страсть", 4: "Одержимость"};
+        const romMap = {1: "Скрытая симпатия", 2: "Легкий флирт", 3: "Яркая страсть", 4: "Одержимость"};
         document.getElementById('romance_lvl').oninput = function() { document.getElementById('rom_txt').innerText = romMap[this.value]; }
 
         document.getElementById('buy_btn').onclick = () => {
