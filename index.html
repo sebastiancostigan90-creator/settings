@@ -8,85 +8,76 @@
     <style>
         :root {
             --bg: #0f0f13;
-            --card: rgba(24, 24, 30, 0.8); /* Полупрозрачный фон карточек */
-            --input: rgba(37, 37, 48, 0.9);
+            --card: rgba(24, 24, 30, 0.75); /* Чуть больше прозрачности */
+            --input: rgba(45, 45, 55, 0.8);
             --accent: #00f3ff;
             --text: #e0e0e0;
             --text-sec: #888899;
             --gold: #ffcc00;
         }
-
+    
         body {
             background-color: var(--bg);
-            /* ФОНОВАЯ КАРТИНКА: Темная абстрактная сетка/технологии */
-            background-image: 
-                linear-gradient(rgba(15, 15, 19, 0.85), rgba(15, 15, 19, 0.85)), 
-                url('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070&auto=format&fit=crop');
+            /* Упрощаем градиент и делаем ссылку на фото более надежной */
+            background: 
+                linear-gradient(rgba(15, 15, 19, 0.8), rgba(15, 15, 19, 0.8)), 
+                url('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=1000&q=80');
             background-size: cover;
-            background-position: center;
+            background-position: center center;
+            background-repeat: no-repeat;
             background-attachment: fixed;
             color: var(--text);
-            font-family: -apple-system, system-ui, sans-serif;
-            margin: 0; padding: 16px;
-            padding-bottom: 120px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0; 
+            padding: 16px;
+            min-height: 100vh; /* Обязательно растягиваем на весь экран */
         }
-
-        /* Карточка статуса лимитов */
-        .status-card {
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px solid rgba(0, 243, 255, 0.3);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-            margin-bottom: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        h2 { font-size: 11px; color: var(--text-sec); text-transform: uppercase; margin: 20px 0 10px 5px; letter-spacing: 1.5px; }
-        
+    
         .card {
             background-color: var(--card);
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px); /* Эффект размытия сзади (стекло) */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            
+            /* Исправляем размытие для всех мобильных браузеров */
+            -webkit-backdrop-filter: blur(15px); 
+            backdrop-filter: blur(15px);
         }
-
-        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--accent); font-weight: 500; }
-        
+    
+        .status-card {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+    
+        /* Остальные стили (кнопки, ползунки) оставляем как были */
         input[type="text"], textarea {
             width: 100%; padding: 12px;
             background: var(--input);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px;
-            color: white; font-size: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white; font-size: 16px;
             box-sizing: border-box; outline: none;
+            -webkit-appearance: none; /* Убирает стандартные тени на iOS */
         }
-
-        .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
-        .chip-label {
-            padding: 10px 14px; background: var(--input);
-            border-radius: 12px; font-size: 12px; cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.1); flex: 1; text-align: center; white-space: nowrap;
+    
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            outline: none;
         }
-        input[type="radio"] { display: none; }
-        input[type="radio"]:checked + .chip-label {
-            background: rgba(0, 243, 255, 0.2);
-            border-color: var(--accent); color: var(--accent);
-            font-weight: bold;
-        }
-
-        .btn-gold {
-            background: var(--gold);
-            color: #000; width: 100%; padding: 15px;
-            border: none; border-radius: 14px;
-            font-weight: bold; cursor: pointer; font-size: 15px;
-            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
-            text-transform: uppercase;
-        }
-
-        input[type="range"] { width: 100%; accent-color: var(--accent); margin: 10px 0; }
-        .val-disp { text-align: right; font-size: 11px; color: var(--accent); font-weight: bold; }
+        /* Дополнительный хак для ползунков в WebView */
+        input[type=range]::-webkit-slider-runnable-track { background: rgba(255,255,255,0.1); border-radius: 5px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; background: var(--accent); border-radius: 50%; width: 18px; height: 18px; margin-top: -6px; }
     </style>
 </head>
 <body>
@@ -183,3 +174,4 @@
     </script>
 </body>
 </html>
+
