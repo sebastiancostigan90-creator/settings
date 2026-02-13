@@ -3,175 +3,316 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Настройки Вселенной</title>
+    <title>Aimi AI Settings</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg: #0f0f13;
-            --card: rgba(24, 24, 30, 0.75); /* Чуть больше прозрачности */
-            --input: rgba(45, 45, 55, 0.8);
-            --accent: #00f3ff;
-            --text: #e0e0e0;
-            --text-sec: #888899;
-            --gold: #ffcc00;
+            --bg-color: #0f0c29;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --accent-color: #7f5af0;
+            --text-color: #fffffe;
+            --button-grad: linear-gradient(135deg, #ff6b6b, #f06595);
+            --save-grad: linear-gradient(90deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
         }
-    
+
         body {
-            background-color: var(--bg);
-            /* Упрощаем градиент и делаем ссылку на фото более надежной */
-            background: 
-                linear-gradient(rgba(15, 15, 19, 0.8), rgba(15, 15, 19, 0.8)), 
-                url('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=1000&q=80');
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0; 
-            padding: 16px;
-            min-height: 100vh; /* Обязательно растягиваем на весь экран */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
-    
-        .card {
-            background-color: var(--card);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            
-            /* Исправляем размытие для всех мобильных браузеров */
-            -webkit-backdrop-filter: blur(15px); 
+
+        /* Анимированный фон с "солнышками" */
+        .sparkles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .sparkle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+            50% { transform: translateY(-100px) scale(1.5); opacity: 0.6; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(to right, #ff9a9e, #fad0c4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
             backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-    
-        .status-card {
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px solid rgba(0, 243, 255, 0.2);
+
+        h2 { font-size: 18px; margin-top: 0; display: flex; align-items: center; gap: 10px; }
+
+        label { display: block; margin-bottom: 8px; font-size: 14px; opacity: 0.8; }
+
+        input, textarea, select {
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 12px;
             padding: 12px;
-            text-align: center;
-            margin-bottom: 20px;
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
+            color: white;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            font-size: 16px;
         }
-    
-        /* Остальные стили (кнопки, ползунки) оставляем как были */
-        input[type="text"], textarea {
-            width: 100%; padding: 12px;
-            background: var(--input);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: white; font-size: 16px;
-            box-sizing: border-box; outline: none;
-            -webkit-appearance: none; /* Убирает стандартные тени на iOS */
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
         }
-    
-        input[type="range"] {
+
+        .choice-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .choice-btn.active {
+            background: var(--button-grad);
+            border: none;
+            box-shadow: 0 4px 15px rgba(240, 101, 149, 0.4);
+        }
+
+        .save-btn {
+            background: var(--save-grad);
+            color: #302b63;
             width: 100%;
-            accent-color: var(--accent);
-            height: 6px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 5px;
-            outline: none;
+            padding: 15px;
+            border-radius: 15px;
+            border: none;
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 10px;
         }
-        /* Дополнительный хак для ползунков в WebView */
-        input[type=range]::-webkit-slider-runnable-track { background: rgba(255,255,255,0.1); border-radius: 5px; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; background: var(--accent); border-radius: 50%; width: 18px; height: 18px; margin-top: -6px; }
+
+        /* Навигация как на картинке */
+        .nav-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-item {
+            text-align: center;
+            font-size: 10px;
+            opacity: 0.6;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-item.active { opacity: 1; }
+        .nav-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+
+        /* Секции (вкладки) */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
+    <div class="sparkles" id="sparkles"></div>
 
-    <!-- ИНДИКАТОР СТАТУСА -->
-    <div class="status-card">
-        <div style="font-size: 10px; color: var(--text-sec); text-transform: uppercase; margin-bottom: 4px;">Тарифный план</div>
-        <div id="user_status" style="font-size: 15px; font-weight: 800; letter-spacing: 1px;">БАЗОВЫЙ (30 сообщ/день)</div>
-    </div>
+    <div class="container">
+        <div class="header">
+            <div class="logo">✨ Aimi AI</div>
+            <p style="opacity: 0.6; font-size: 12px;">Тепло. История. Ты.</p>
+        </div>
 
-    <h2>👤 Ваш Герой</h2>
-    <div class="card">
-        <label>Имя персонажа</label>
-        <input type="text" id="user_name" placeholder="Как вас зовут?">
-        
-        <label style="margin-top:15px">Ваша роль</label>
-        <input type="text" id="user_role" placeholder="Студентка, Детектив, Пленница...">
+        <!-- ВКЛАДКА НАСТРОЕК -->
+        <div id="settings-tab" class="tab-content active">
+            <div class="glass-card">
+                <h2>👤 Основная информация</h2>
+                <label>Ваше имя</label>
+                <input type="text" id="user_name" placeholder="Например: Алиса">
+                
+                <label>Ваша роль</label>
+                <input type="text" id="user_role" placeholder="студент, детектив, принцесса...">
+            </div>
 
-        <label style="margin-top:15px">Внешность и черты</label>
-        <textarea id="user_desc" rows="2" placeholder="Опишите себя..."></textarea>
-    </div>
+            <div class="glass-card">
+                <h2>💬 Общение</h2>
+                <label>Длина сообщений</label>
+                <div class="button-group" id="msg_len">
+                    <button class="choice-btn" onclick="setChoice('msg_len', 1, this)">Короткая</button>
+                    <button class="choice-btn active" onclick="setChoice('msg_len', 2, this)">Средняя</button>
+                    <button class="choice-btn" onclick="setChoice('msg_len', 3, this)">Длинная</button>
+                </div>
 
-    <h2>🌍 Окружение истории</h2>
-    <div class="card">
-        <label>Место действия</label>
-        <textarea id="setting" rows="2" placeholder="Где вы сейчас? (Напр: Темный лес, Офис...)"></textarea>
+                <label>Уровень романтики</label>
+                <div class="button-group" id="romance">
+                    <button class="choice-btn" onclick="setChoice('romance', 1, this)">Легкий</button>
+                    <button class="choice-btn active" onclick="setChoice('romance', 2, this)">Средний</button>
+                    <button class="choice-btn" onclick="setChoice('romance', 3, this)">Макси</button>
+                </div>
+            </div>
 
-        <label style="margin-top:15px">Второстепенные персонажи</label>
-        <div class="chips">
-            <label><input type="radio" name="npc" value="none"><div class="chip-label">Только мы 🔒</div></label>
-            <label><input type="radio" name="npc" value="low" checked><div class="chip-label">Иногда 👤</div></label>
-            <label><input type="radio" name="npc" value="high"><div class="chip-label">Толпа 👥</div></label>
+            <div class="glass-card">
+                <h2>🗺️ Сюжет</h2>
+                <label>Место действия, сеттинг</label>
+                <textarea id="setting" rows="3" placeholder="Современный город, фэнтези мир..."></textarea>
+            </div>
+
+            <button class="save-btn" onclick="saveData()">💾 Сохранить настройки</button>
+            <p style="font-size: 11px; opacity: 0.5; text-align: center; margin-top: 15px;">
+                * Эти настройки будут глобальными для всех новых чатов. Вы сможете изменить их внутри конкретной истории.
+            </p>
+        </div>
+
+        <!-- ВКЛАДКА МАГАЗИНА -->
+        <div id="shop-tab" class="tab-content">
+            <div class="glass-card">
+                <h2>💎 Магазин Aimi Coins</h2>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="font-size: 32px;">💰 0</span><br>
+                    <span style="opacity: 0.6;">Ваш баланс</span>
+                </div>
+                
+                <div class="shop-item">
+                    <span>100 Aimi Coins</span>
+                    <button class="choice-btn active" onclick="buy(100)">100 ★</button>
+                </div>
+                <div class="shop-item">
+                    <span>500 Aimi Coins</span>
+                    <button class="choice-btn active" onclick="buy(500)">450 ★</button>
+                </div>
+                <div class="shop-item">
+                    <span>VIP Статус (Навсегда)</span>
+                    <button class="choice-btn active" onclick="buy('vip')">1500 ★</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <h2>🎭 Стиль повествования</h2>
-    <div class="card">
-        <label>Длина ответов бота</label>
-        <input type="range" id="msg_len" min="1" max="3" step="1" value="2">
-        <div class="val-disp" id="len_txt">Средние (Баланс)</div>
-
-        <label style="margin-top:15px">Режим контента</label>
-        <div class="chips">
-            <label><input type="radio" name="mode" value="sfw" checked><div class="chip-label">Романтика 🌸</div></label>
-            <label><input type="radio" name="mode" value="nsfw"><div class="chip-label">18+ 🔥</div></label>
-        </div>
-
-        <label style="margin-top:15px">Уровень страсти</label>
-        <input type="range" id="romance_lvl" min="1" max="4" step="1" value="2">
-        <div class="val-disp" id="rom_txt">Легкий флирт</div>
-    </div>
-
-    <h2>💎 Магазин функций</h2>
-    <div class="card" style="border-color: var(--gold); background: rgba(255, 204, 0, 0.05);">
-        <p style="font-size: 12px; margin-bottom: 12px; text-align: center; color: var(--gold);">Снимите лимиты и откройте 18+ режим навсегда</p>
-        <button class="btn-gold" id="buy_btn">СТАТЬ VIP — 250 ⭐</button>
+    <!-- НИЖНЯЯ ПАНЕЛЬ -->
+    <div class="nav-bar">
+        <a href="#" class="nav-item active" onclick="switchTab('settings', this)">
+            <span class="nav-icon">⚙️</span>Настройки
+        </a>
+        <a href="#" class="nav-item" onclick="switchTab('shop', this)">
+            <span class="nav-icon">🛍️</span>Магазин
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">✨</span>Функции
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">👑</span>Подписка
+        </a>
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
+        let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.MainButton.text = "ПРИМЕНИТЬ И ЗАКРЫТЬ";
-        tg.MainButton.setParams({color: "#00f3ff", text_color: "#000000"});
-        tg.MainButton.show();
 
-        // Слайдеры
-        const lenMap = {1: "Короткие (Чат)", 2: "Средние (Баланс)", 3: "Длинные (Книга)"};
-        document.getElementById('msg_len').oninput = function() { document.getElementById('len_txt').innerText = lenMap[this.value]; }
-        
-        const romMap = {1: "Скрытая симпатия", 2: "Легкий флирт", 3: "Яркая страсть", 4: "Одержимость"};
-        document.getElementById('romance_lvl').oninput = function() { document.getElementById('rom_txt').innerText = romMap[this.value]; }
-
-        // Кнопка VIP
-        document.getElementById('buy_btn').onclick = () => {
-            tg.sendData(JSON.stringify({action: "buy_premium"}));
-            tg.close();
+        let choices = {
+            msg_len: 2,
+            romance: 2
         };
 
-        // Кнопка Применить
-        tg.onEvent('mainButtonClicked', () => {
-            const data = {
+        // Создание эффекта солнышек
+        function createSparkles() {
+            const container = document.getElementById('sparkles');
+            for(let i=0; i<20; i++) {
+                let s = document.createElement('div');
+                s.className = 'sparkle';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                let size = Math.random() * 4 + 2 + 'px';
+                s.style.width = size; s.style.height = size;
+                s.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(s);
+            }
+        }
+        createSparkles();
+
+        function setChoice(key, val, el) {
+            choices[key] = val;
+            let btns = el.parentElement.querySelectorAll('.choice-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function switchTab(tab, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            el.classList.add('active');
+        }
+
+        function saveData() {
+            let data = {
+                action: 'save_profile',
                 user_name: document.getElementById('user_name').value,
                 user_role: document.getElementById('user_role').value,
-                user_desc: document.getElementById('user_desc').value,
                 setting: document.getElementById('setting').value,
-                npc: document.querySelector('input[name="npc"]:checked').value,
-                msg_len: document.getElementById('msg_len').value,
-                mode: document.querySelector('input[name="mode"]:checked').value,
-                romance: document.getElementById('romance_lvl').value
+                msg_len: choices.msg_len,
+                romance: choices.romance
             };
             tg.sendData(JSON.stringify(data));
             tg.close();
-        });
+        }
+
+        function buy(item) {
+            tg.sendData(JSON.stringify({action: 'buy', item: item}));
+        }
     </script>
 </body>
 </html>
-
