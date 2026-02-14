@@ -8,11 +8,13 @@
     <style>
         :root {
             --bg-color: #0f0c29;
-            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --accent-color: #7f5af0;
             --text-color: #fffffe;
             --button-grad: linear-gradient(135deg, #ff6b6b, #f06595);
-            --save-grad: linear-gradient(90deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            --save-grad: linear-gradient(90deg, #8E2DE2, #4A00E0);
+            --toggle-bg: #f06595;
         }
 
         body {
@@ -21,151 +23,254 @@
             color: var(--text-color);
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Чтобы звезды не расширяли экран */
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Анимированный фон с "солнышками" */
+        /* --- АНИМАЦИЯ ФОНА (Падающие звезды) --- */
         .sparkles {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
             z-index: 0;
+            overflow: hidden;
         }
 
         .sparkle {
             position: absolute;
             background: white;
             border-radius: 50%;
-            opacity: 0.3;
-            animation: float 10s infinite ease-in-out;
+            opacity: 0;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
+            animation: fall linear infinite;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
-            50% { transform: translateY(-100px) scale(1.5); opacity: 0.6; }
+        @keyframes fall {
+            0% { transform: translate(0, -10vh) scale(0.5); opacity: 0; }
+            10% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translate(-20vw, 110vh) scale(1.2); opacity: 0; }
         }
 
+        /* --- ОСНОВНОЙ КОНТЕЙНЕР --- */
         .container {
             position: relative;
             z-index: 1;
             padding: 20px;
-            padding-bottom: 100px;
+            padding-bottom: 100px; /* Отступ для навбара */
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            margin-top: 10px;
         }
 
         .logo {
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 32px;
+            font-weight: 800;
             background: linear-gradient(to right, #ff9a9e, #fad0c4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
         }
 
+        /* --- КАРТОЧКИ --- */
         .glass-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
             padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
-        h2 { font-size: 18px; margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        h2 { 
+            font-size: 17px; 
+            margin-top: 0; 
+            margin-bottom: 15px;
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-weight: 600;
+            color: #e0e0e0;
+        }
 
-        label { display: block; margin-bottom: 8px; font-size: 14px; opacity: 0.8; }
+        label { display: block; margin-bottom: 8px; font-size: 13px; opacity: 0.7; margin-left: 4px; }
 
-        input, textarea, select {
+        /* --- ИНПУТЫ --- */
+        input[type="text"], textarea {
             width: 100%;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.3);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 12px;
+            border-radius: 16px;
+            padding: 14px;
             color: white;
             box-sizing: border-box;
             margin-bottom: 15px;
-            font-size: 16px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
         }
 
+        input:focus, textarea:focus {
+            border-color: rgba(255,255,255,0.4);
+            background: rgba(0,0,0,0.5);
+        }
+
+        /* --- КНОПКИ ВЫБОРА --- */
         .button-group {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: 1fr 1fr 1fr; /* 3 кнопки в ряд */
+            gap: 8px;
             margin-bottom: 15px;
+            background: rgba(0,0,0,0.2);
+            padding: 4px;
+            border-radius: 16px;
         }
 
         .choice-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white;
-            padding: 10px;
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.6);
+            padding: 12px 5px;
             border-radius: 12px;
             font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
             transition: 0.3s;
         }
 
         .choice-btn.active {
             background: var(--button-grad);
-            border: none;
-            box-shadow: 0 4px 15px rgba(240, 101, 149, 0.4);
+            color: white;
+            box-shadow: 0 4px 15px rgba(240, 101, 149, 0.3);
         }
 
+        /* --- ПЕРЕКЛЮЧАТЕЛЬ (TOGGLE) --- */
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.1);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        input:checked + .slider { background-color: var(--toggle-bg); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* --- КНОПКА СОХРАНИТЬ --- */
         .save-btn {
             background: var(--save-grad);
-            color: #302b63;
+            color: white;
             width: 100%;
-            padding: 15px;
-            border-radius: 15px;
+            padding: 16px;
+            border-radius: 20px;
             border: none;
-            font-weight: bold;
-            font-size: 18px;
+            font-weight: 700;
+            font-size: 16px;
             margin-top: 10px;
+            box-shadow: 0 5px 20px rgba(74, 0, 224, 0.4);
+            cursor: pointer;
+            transform: scale(1);
+            transition: 0.2s;
         }
+        .save-btn:active { transform: scale(0.98); }
 
-        /* Навигация как на картинке */
+        /* --- НАВИГАЦИЯ --- */
         .nav-bar {
             position: fixed;
             bottom: 20px;
             left: 20px;
             right: 20px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(20, 20, 40, 0.85);
             backdrop-filter: blur(20px);
-            border-radius: 25px;
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
             display: flex;
             justify-content: space-around;
-            padding: 10px;
+            padding: 12px 10px;
             border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 100;
         }
 
         .nav-item {
             text-align: center;
-            font-size: 10px;
-            opacity: 0.6;
+            font-size: 11px;
+            opacity: 0.5;
             color: white;
             text-decoration: none;
+            width: 100%;
+            transition: 0.3s;
         }
 
-        .nav-item.active { opacity: 1; }
-        .nav-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+        .nav-item.active { opacity: 1; transform: translateY(-2px); }
+        .nav-icon { font-size: 22px; display: block; margin-bottom: 4px; }
 
-        /* Секции (вкладки) */
-        .tab-content { display: none; }
+        /* --- TAB LOGIC --- */
+        .tab-content { display: none; animation: fadeIn 0.4s; }
         .tab-content.active { display: block; }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- МАГАЗИН --- */
         .shop-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
             margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
+        .coin-icon { color: #ffd700; margin-right: 5px; }
+        .buy-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .buy-btn:active { background: rgba(255,255,255,0.2); }
     </style>
 </head>
 <body>
@@ -174,75 +279,99 @@
     <div class="container">
         <div class="header">
             <div class="logo">✨ Aimi AI</div>
-            <p style="opacity: 0.6; font-size: 12px;">Тепло. История. Ты.</p>
+            <p style="opacity: 0.6; font-size: 13px; margin-top: 5px;">Тепло. История. Ты.</p>
         </div>
 
-        <!-- ВКЛАДКА НАСТРОЕК -->
+        <!-- === ВКЛАДКА НАСТРОЕК === -->
         <div id="settings-tab" class="tab-content active">
+            
             <div class="glass-card">
                 <h2>👤 Основная информация</h2>
                 <label>Ваше имя</label>
-                <input type="text" id="user_name" placeholder="Например: Алиса">
+                <input type="text" id="user_name" placeholder="Например: Алекс">
                 
                 <label>Ваша роль</label>
-                <input type="text" id="user_role" placeholder="студент, детектив, принцесса...">
+                <input type="text" id="user_role" placeholder="Студент, детектив, маг...">
             </div>
 
             <div class="glass-card">
-                <h2>💬 Общение</h2>
-                <label>Длина сообщений</label>
+                <h2>💬 Стиль общения</h2>
+                
+                <label>Длина сообщений бота</label>
                 <div class="button-group" id="msg_len">
-                    <button class="choice-btn" onclick="setChoice('msg_len', 1, this)">Короткая</button>
-                    <button class="choice-btn active" onclick="setChoice('msg_len', 2, this)">Средняя</button>
-                    <button class="choice-btn" onclick="setChoice('msg_len', 3, this)">Длинная</button>
+                    <button class="choice-btn" onclick="setChoice('msg_len', 1, this)">Коротко</button>
+                    <button class="choice-btn active" onclick="setChoice('msg_len', 2, this)">Средне</button>
+                    <button class="choice-btn" onclick="setChoice('msg_len', 3, this)">Длинно</button>
                 </div>
 
                 <label>Уровень романтики</label>
                 <div class="button-group" id="romance">
-                    <button class="choice-btn" onclick="setChoice('romance', 1, this)">Легкий</button>
-                    <button class="choice-btn active" onclick="setChoice('romance', 2, this)">Средний</button>
-                    <button class="choice-btn" onclick="setChoice('romance', 3, this)">Макси</button>
+                    <button class="choice-btn" onclick="setChoice('romance', 1, this)">Лайт</button>
+                    <button class="choice-btn active" onclick="setChoice('romance', 2, this)">Норм</button>
+                    <button class="choice-btn" onclick="setChoice('romance', 3, this)">Макс</button>
                 </div>
             </div>
 
             <div class="glass-card">
-                <h2>🗺️ Сюжет</h2>
-                <label>Место действия, сеттинг</label>
-                <textarea id="setting" rows="3" placeholder="Современный город, фэнтези мир..."></textarea>
+                <h2>🔞 Контент</h2>
+                <div class="toggle-container">
+                    <span style="font-size: 15px; font-weight: 500;">Режим 18+ (NSFW)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="nsfw_mode">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <p style="font-size: 11px; opacity: 0.5; margin-top: 8px; line-height: 1.4;">
+                    Включает возможность откровенных тем и добавляет вопросы о предпочтениях при создании персонажа.
+                </p>
             </div>
 
-            <button class="save-btn" onclick="saveData()">💾 Сохранить настройки</button>
-            <p style="font-size: 11px; opacity: 0.5; text-align: center; margin-top: 15px;">
-                * Эти настройки будут глобальными для всех новых чатов. Вы сможете изменить их внутри конкретной истории.
-            </p>
+            <div class="glass-card">
+                <h2>🗺️ Сеттинг по умолчанию</h2>
+                <textarea id="setting" rows="3" placeholder="Опишите мир, где будут происходить события (современный город, космос, фэнтези)..."></textarea>
+            </div>
+
+            <button class="save-btn" onclick="saveData()">💾 Сохранить профиль</button>
+            <div style="height: 40px;"></div> <!-- Отступ снизу -->
         </div>
 
-        <!-- ВКЛАДКА МАГАЗИНА -->
+        <!-- === ВКЛАДКА МАГАЗИНА === -->
         <div id="shop-tab" class="tab-content">
             <div class="glass-card">
                 <h2>💎 Магазин Aimi Coins</h2>
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <span style="font-size: 32px;">💰 0</span><br>
-                    <span style="opacity: 0.6;">Ваш баланс</span>
+                <div style="text-align: center; margin: 30px 0;">
+                    <span style="font-size: 42px; font-weight: bold; text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);">0</span><br>
+                    <span style="opacity: 0.6; font-size: 14px;">Ваш баланс монет</span>
                 </div>
                 
                 <div class="shop-item">
-                    <span>100 Aimi Coins</span>
-                    <button class="choice-btn active" onclick="buy(100)">100 ★</button>
+                    <div>
+                        <div style="font-weight: bold;">Горсть монет</div>
+                        <div style="font-size: 12px; opacity: 0.6;">100 Aimi Coins</div>
+                    </div>
+                    <button class="buy-btn" onclick="buy(100)">100 ⭐️</button>
                 </div>
+
                 <div class="shop-item">
-                    <span>500 Aimi Coins</span>
-                    <button class="choice-btn active" onclick="buy(500)">450 ★</button>
+                    <div>
+                        <div style="font-weight: bold;">Мешок монет</div>
+                        <div style="font-size: 12px; opacity: 0.6;">500 Aimi Coins</div>
+                    </div>
+                    <button class="buy-btn" onclick="buy(500)">450 ⭐️</button>
                 </div>
-                <div class="shop-item">
-                    <span>VIP Статус (Навсегда)</span>
-                    <button class="choice-btn active" onclick="buy('vip')">1500 ★</button>
+
+                <div class="shop-item" style="background: linear-gradient(90deg, rgba(142, 45, 226, 0.2), rgba(74, 0, 224, 0.2)); border-color: rgba(142, 45, 226, 0.4);">
+                    <div>
+                        <div style="font-weight: bold;">VIP Статус</div>
+                        <div style="font-size: 12px; opacity: 0.6;">Безлимит навсегда</div>
+                    </div>
+                    <button class="buy-btn" style="background: white; color: #4A00E0; font-weight: bold;" onclick="buy('vip')">1500 ⭐️</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- НИЖНЯЯ ПАНЕЛЬ -->
+    <!-- === НИЖНЯЯ ПАНЕЛЬ === -->
     <div class="nav-bar">
         <a href="#" class="nav-item active" onclick="switchTab('settings', this)">
             <span class="nav-icon">⚙️</span>Настройки
@@ -250,53 +379,67 @@
         <a href="#" class="nav-item" onclick="switchTab('shop', this)">
             <span class="nav-icon">🛍️</span>Магазин
         </a>
-        <a href="#" class="nav-item">
-            <span class="nav-icon">✨</span>Функции
-        </a>
-        <a href="#" class="nav-item">
-            <span class="nav-icon">👑</span>Подписка
-        </a>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); // Раскрыть на весь экран
 
+        // Значения по умолчанию
         let choices = {
             msg_len: 2,
             romance: 2
         };
 
-        // Создание эффекта солнышек
+        // --- Анимация падающих звезд ---
         function createSparkles() {
             const container = document.getElementById('sparkles');
-            for(let i=0; i<20; i++) {
+            // Создаем 30 звезд для плотного фона
+            for(let i=0; i<30; i++) {
                 let s = document.createElement('div');
                 s.className = 'sparkle';
+                
+                // Случайная позиция по ширине
                 s.style.left = Math.random() * 100 + '%';
-                s.style.top = Math.random() * 100 + '%';
-                let size = Math.random() * 4 + 2 + 'px';
-                s.style.width = size; s.style.height = size;
+                
+                // Случайная задержка (чтобы падали не одновременно)
                 s.style.animationDelay = Math.random() * 5 + 's';
+                
+                // Случайная скорость падения
+                s.style.animationDuration = Math.random() * 5 + 4 + 's';
+                
+                // Случайный размер (от 2px до 5px)
+                let size = Math.random() * 3 + 2 + 'px';
+                s.style.width = size; s.style.height = size;
+                
                 container.appendChild(s);
             }
         }
         createSparkles();
 
+        // --- Логика кнопок выбора ---
         function setChoice(key, val, el) {
             choices[key] = val;
+            // Убираем класс active у всех кнопок в этой группе
             let btns = el.parentElement.querySelectorAll('.choice-btn');
             btns.forEach(b => b.classList.remove('active'));
+            // Добавляем нажатой
             el.classList.add('active');
         }
 
+        // --- Переключение вкладок ---
         function switchTab(tab, el) {
+            // Скрываем все вкладки
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            // Деактивируем кнопки меню
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            // Показываем нужную
             document.getElementById(tab + '-tab').classList.add('active');
             el.classList.add('active');
         }
 
+        // --- Сохранение данных ---
         function saveData() {
             let data = {
                 action: 'save_profile',
@@ -304,12 +447,15 @@
                 user_role: document.getElementById('user_role').value,
                 setting: document.getElementById('setting').value,
                 msg_len: choices.msg_len,
-                romance: choices.romance
+                romance: choices.romance,
+                // Считываем состояние чекбокса NSFW
+                is_nsfw: document.getElementById('nsfw_mode').checked
             };
             tg.sendData(JSON.stringify(data));
             tg.close();
         }
 
+        // --- Покупка ---
         function buy(item) {
             tg.sendData(JSON.stringify({action: 'buy', item: item}));
         }
