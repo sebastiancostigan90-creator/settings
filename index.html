@@ -286,7 +286,7 @@
                     <button class="choice-btn active" onclick="setChoice('msg_len', 2, this)">Средние</button>
                     <button class="choice-btn" onclick="setChoice('msg_len', 3, this)">Длинные</button>
                 </div>
-                <p class="desc-text" id="desc_msg_len">Оптимальный размер для динамичного диалога.</p>
+                <p class="desc-text" id="desc_msg_len">Оптимальный размер для динамичного диалога. Доступны 7 дней бесплатно, затем в VIP.</p>
             </div>
 
             <div class="glass-card">
@@ -406,7 +406,7 @@
             msg_len: {
                 1: "Пара предложений. Быстрый обмен репликами.",
                 2: "Оптимальный размер (1 абзац). Динамичный диалог.",
-                3: "Подробные ответы в книжном стиле с деталями."
+                3: "Книжный стиль. Доступно 7 дней бесплатно, далее в VIP."
             },
             predictability: {
                 1: "Строго по логике, минимум неожиданностей.",
@@ -425,35 +425,52 @@
             }
         };
 
-        function loadParams() {
+            function loadParams() {
             const urlParams = new URLSearchParams(window.location.search);
-            // Получаем два параметра: total (одноразовые) и daily (дневные)
-            const totalLeft = urlParams.get('total') || '0';
-            const dailyLeft = urlParams.get('daily') || '0';
+            
+            // Получаем параметры
+            const totalLeft = parseInt(urlParams.get('total') || '0');
+            const dailyLeft = parseInt(urlParams.get('daily') || '0');
+            const vipLeft = parseInt(urlParams.get('vip') || '0');
             const isPrem = urlParams.get('prem') === '1';
             
             userIsPremium = isPrem;
 
-            // Формируем красивую строку баланса
+            // --- ЛОГИКА ОТОБРАЖЕНИЯ СЧЕТЧИКА ---
             let balanceText = "";
+            let statusText = "";
+            let statusColor = "";
+
             if (isPrem) {
-                balanceText = "∞ Безлимит";
+                // Если VIP - показываем остаток из 400
+                balanceText = `${vipLeft} на сегодня`;
+                statusText = '👑 PREMIUM';
+                statusColor = '#ffd700';
             } else {
-                balanceText = `${totalLeft} (Приветственный бонус) + ${dailyLeft} (Дневной лимит)`;
+                // Если Обычный
+                statusText = 'Обычный';
+                statusColor = 'rgba(255,255,255,0.7)';
+
+                if (totalLeft > 0) {
+                    // Если есть бонусные
+                    balanceText = `${totalLeft} (Бонус) + ${dailyLeft} (День)`;
+                } else {
+                    // Если бонусные кончились, показываем только дневные
+                    balanceText = `${dailyLeft} на сегодня`;
+                }
             }
 
+            // Обновляем UI
             document.getElementById('msgs_left_display').innerText = balanceText;
             
             const statusEl = document.getElementById('status_display');
+            statusEl.innerText = statusText;
+            statusEl.style.color = statusColor;
+            
             if (isPrem) {
-                statusEl.innerText = '👑 PREMIUM';
-                statusEl.style.color = '#ffd700';
                 statusEl.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
                 const maxBtn = document.querySelectorAll('#passion_lvl .choice-btn')[2];
                 if (maxBtn) maxBtn.innerText = "Макси 🔥";
-            } else {
-                statusEl.innerText = 'Обычный';
-                statusEl.style.color = 'rgba(255,255,255,0.7)';
             }
         }
 
@@ -546,4 +563,5 @@
     </script>
 </body>
 </html>
+
 
