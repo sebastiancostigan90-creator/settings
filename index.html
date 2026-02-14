@@ -39,10 +39,11 @@
 
         .sparkle {
             position: absolute;
-            background: white;
+            background: #ffd700; /* Золотой цвет */
             border-radius: 50%;
             opacity: 0;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
+            /* Желтое свечение */
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.4); 
             animation: fall linear infinite;
         }
 
@@ -281,36 +282,91 @@
             <div class="logo">✨ Aimi AI</div>
             <p style="opacity: 0.6; font-size: 13px; margin-top: 5px;">Тепло. История. Ты.</p>
         </div>
+        <div class="glass-card" style="padding: 15px; background: rgba(255, 215, 0, 0.05); border-color: rgba(255, 215, 0, 0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-size: 12px; opacity: 0.7;">Сообщений сегодня</div>
+                    <div style="font-size: 18px; font-weight: bold;" id="msgs_left_display">Loading...</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 12px; opacity: 0.7;">Статус</div>
+                    <div style="font-size: 14px; font-weight: bold; color: #ffd700;" id="status_display">Checking...</div>
+                </div>
+            </div>
+        </div>
 
         <!-- === ВКЛАДКА НАСТРОЕК === -->
-        <div id="settings-tab" class="tab-content active">
+    <div id="settings-tab" class="tab-content active">
             
             <div class="glass-card">
                 <h2>👤 Основная информация</h2>
                 <label>Ваше имя</label>
                 <input type="text" id="user_name" placeholder="Например: Алекс">
-                
                 <label>Ваша роль</label>
                 <input type="text" id="user_role" placeholder="Студент, детектив, маг...">
             </div>
 
             <div class="glass-card">
                 <h2>💬 Стиль общения</h2>
-                
                 <label>Длина сообщений бота</label>
                 <div class="button-group" id="msg_len">
                     <button class="choice-btn" onclick="setChoice('msg_len', 1, this)">Коротко</button>
                     <button class="choice-btn active" onclick="setChoice('msg_len', 2, this)">Средне</button>
                     <button class="choice-btn" onclick="setChoice('msg_len', 3, this)">Длинно</button>
                 </div>
+            </div>
 
-                <label>Уровень романтики</label>
-                <div class="button-group" id="romance">
-                    <button class="choice-btn" onclick="setChoice('romance', 1, this)">Лайт</button>
-                    <button class="choice-btn active" onclick="setChoice('romance', 2, this)">Норм</button>
-                    <button class="choice-btn" onclick="setChoice('romance', 3, this)">Макс</button>
+            <!-- Блок Сюжета (Новый) -->
+            <div class="glass-card">
+                <h2>📚 Сюжет</h2>
+                
+                <label>Предсказуемость</label>
+                <div class="button-group" id="predictability">
+                    <button class="choice-btn" onclick="setChoice('predictability', 1, this)">Рельсы</button>
+                    <button class="choice-btn active" onclick="setChoice('predictability', 2, this)">Баланс</button>
+                    <button class="choice-btn" onclick="setChoice('predictability', 3, this)">Хаос</button>
+                </div>
+
+                <label>Насыщенность событиями</label>
+                <div class="button-group" id="saturation">
+                    <button class="choice-btn" onclick="setChoice('saturation', 1, this)">Чилл</button>
+                    <button class="choice-btn active" onclick="setChoice('saturation', 2, this)">Баланс</button>
+                    <button class="choice-btn" onclick="setChoice('saturation', 3, this)">Экшн</button>
                 </div>
             </div>
+
+            <div class="glass-card">
+                <h2>🔞 Контент</h2>
+                <div class="toggle-container">
+                    <span style="font-size: 15px; font-weight: 500;">Режим 18+ (NSFW)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="nsfw_mode" onchange="togglePassionVisibility()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- Блок Страсти (появляется только если 18+ включен) -->
+                <div id="passion_block" style="display: none; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                    <label>Уровень откровенности</label>
+                    <div class="button-group" id="passion_lvl">
+                        <button class="choice-btn active" onclick="setChoice('passion_lvl', 1, this)">Мягко</button>
+                        <button class="choice-btn" onclick="setChoice('passion_lvl', 2, this)">Подробно</button>
+                        <button class="choice-btn" onclick="checkPremiumForMax(this)">Макси 🔒</button>
+                    </div>
+                    <p style="font-size: 10px; opacity: 0.6; margin-top: 5px;" id="passion_desc">
+                        Чувственные описания без грубостей и анатомических подробностей.
+                    </p>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h2>🗺️ Место действия и сеттинг</h2>
+                <textarea id="setting" rows="3" placeholder="Опишите мир, где будут происходить события..."></textarea>
+            </div>
+
+            <button class="save-btn" onclick="saveData()">💾 Сохранить профиль</button>
+            <div style="height: 40px;"></div>
+        </div>
 
             <div class="glass-card">
                 <h2>🔞 Контент</h2>
@@ -381,84 +437,165 @@
         </a>
     </div>
 
-    <script>
+<script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрыть на весь экран
+        tg.expand(); // Раскрываем на весь экран
 
-        // Значения по умолчанию
+        // === СОСТОЯНИЕ (Переменные) ===
         let choices = {
-            msg_len: 2,
-            romance: 2
+            msg_len: 2,         // Длина сообщений
+            predictability: 2,  // Предсказуемость (1-3)
+            saturation: 2,      // Насыщенность (1-3)
+            passion_lvl: 1,     // Уровень страсти (1-3)
+            romance: 2          // Романтика (скрыта, по умолчанию средняя)
         };
+        
+        let userIsPremium = false; // Статус пользователя (придет из URL)
 
-        // --- Анимация падающих звезд ---
+        // === 1. ЧТЕНИЕ ПАРАМЕТРОВ ИЗ URL (От Бота) ===
+        function loadParams() {
+            // Бот передает параметры в ссылке, например: .../index.html?msgs=25&prem=1
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            const msgsLeft = urlParams.get('msgs') || '...';
+            const isPrem = urlParams.get('prem') === '1';
+            
+            userIsPremium = isPrem; // Запоминаем статус
+
+            // Обновляем статистику вверху
+            document.getElementById('msgs_left_display').innerText = msgsLeft;
+            
+            const statusEl = document.getElementById('status_display');
+            if (isPrem) {
+                statusEl.innerText = '👑 PREMIUM';
+                statusEl.style.color = '#ffd700'; // Золотой
+                statusEl.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                
+                // Если юзер Премиум, убираем замочек с кнопки "Макси"
+                const maxBtn = document.querySelectorAll('#passion_lvl .choice-btn')[2];
+                if (maxBtn) maxBtn.innerText = "Макси 🔥";
+            } else {
+                statusEl.innerText = 'Обычный';
+                statusEl.style.color = 'rgba(255,255,255,0.7)';
+            }
+        }
+
+        // === 2. АНИМАЦИЯ ЗОЛОТЫХ ЧАСТИЦ ===
         function createSparkles() {
             const container = document.getElementById('sparkles');
-            // Создаем 30 звезд для плотного фона
-            for(let i=0; i<30; i++) {
+            for(let i=0; i<35; i++) { // Количество частиц
                 let s = document.createElement('div');
                 s.className = 'sparkle';
                 
-                // Случайная позиция по ширине
+                // Рандомная позиция
                 s.style.left = Math.random() * 100 + '%';
-                
-                // Случайная задержка (чтобы падали не одновременно)
+                // Рандомная задержка
                 s.style.animationDelay = Math.random() * 5 + 's';
-                
-                // Случайная скорость падения
+                // Рандомная скорость
                 s.style.animationDuration = Math.random() * 5 + 4 + 's';
-                
-                // Случайный размер (от 2px до 5px)
-                let size = Math.random() * 3 + 2 + 'px';
+                // Рандомный размер
+                let size = Math.random() * 4 + 2 + 'px';
                 s.style.width = size; s.style.height = size;
                 
                 container.appendChild(s);
             }
         }
-        createSparkles();
 
-        // --- Логика кнопок выбора ---
+        // === 3. ЛОГИКА ВЫБОРА КНОПОК ===
         function setChoice(key, val, el) {
             choices[key] = val;
-            // Убираем класс active у всех кнопок в этой группе
-            let btns = el.parentElement.querySelectorAll('.choice-btn');
-            btns.forEach(b => b.classList.remove('active'));
-            // Добавляем нажатой
-            el.classList.add('active');
-        }
-
-        // --- Переключение вкладок ---
-        function switchTab(tab, el) {
-            // Скрываем все вкладки
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            // Деактивируем кнопки меню
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             
-            // Показываем нужную
-            document.getElementById(tab + '-tab').classList.add('active');
+            // Визуальное переключение (удаляем active у соседей, ставим нажатой)
+            let container = el.parentElement;
+            let btns = container.querySelectorAll('.choice-btn');
+            btns.forEach(b => b.classList.remove('active'));
             el.classList.add('active');
+
+            // Если меняем уровень страсти — меняем описание снизу
+            if (key === 'passion_lvl') {
+                const desc = document.getElementById('passion_desc');
+                if (val === 1) desc.innerText = "Чувственные описания, эвфемизмы, без грубой анатомии.";
+                if (val === 2) desc.innerText = "Откровенно, с детальным описанием действий и ощущений.";
+                if (val === 3) desc.innerText = "Хардкор, особые предпочтения, сцены с характером.";
+            }
         }
 
-        // --- Сохранение данных ---
+        // === 4. ПРОВЕРКА ПРЕМИУМА (Для кнопки Макси) ===
+        function checkPremiumForMax(el) {
+            if (!userIsPremium) {
+                // Показываем нативное всплывающее окно Телеграм
+                tg.showPopup({
+                    title: 'Доступ закрыт 🔒',
+                    message: 'Режим "Макси" с особым характером доступен только VIP пользователям. Загляните в магазин!',
+                    buttons: [{type: 'ok'}]
+                });
+            } else {
+                // Если премиум есть — разрешаем выбор
+                setChoice('passion_lvl', 3, el);
+            }
+        }
+
+        // === 5. ПЕРЕКЛЮЧАТЕЛЬ 18+ ===
+        function togglePassionVisibility() {
+            const isChecked = document.getElementById('nsfw_mode').checked;
+            const block = document.getElementById('passion_block');
+            
+            // Показываем блок "Страсть" только если включен свитч
+            if (isChecked) {
+                block.style.display = 'block';
+                // Небольшая анимация появления
+                block.style.opacity = 0;
+                setTimeout(() => { block.style.transition = '0.3s'; block.style.opacity = 1; }, 10);
+            } else {
+                block.style.display = 'none';
+            }
+        }
+
+        // === 6. СОХРАНЕНИЕ ДАННЫХ ===
         function saveData() {
             let data = {
                 action: 'save_profile',
+                
+                // Текстовые поля
                 user_name: document.getElementById('user_name').value,
                 user_role: document.getElementById('user_role').value,
                 setting: document.getElementById('setting').value,
+                
+                // Кнопки
                 msg_len: choices.msg_len,
-                romance: choices.romance,
-                // Считываем состояние чекбокса NSFW
-                is_nsfw: document.getElementById('nsfw_mode').checked
+                predictability: choices.predictability,
+                saturation: choices.saturation,
+                
+                // 18+ и страсть
+                is_nsfw: document.getElementById('nsfw_mode').checked,
+                passion_lvl: choices.passion_lvl,
+                
+                // Романтика всегда средняя (скрыта)
+                romance: 2 
             };
+            
+            // Отправляем боту
             tg.sendData(JSON.stringify(data));
             tg.close();
         }
 
-        // --- Покупка ---
+        // === 7. НАВИГАЦИЯ И МАГАЗИН ===
+        function switchTab(tab, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(tab + '-tab').classList.add('active');
+            el.classList.add('active');
+        }
+
         function buy(item) {
             tg.sendData(JSON.stringify({action: 'buy', item: item}));
         }
+
+        // === ЗАПУСК ПРИ ОТКРЫТИИ ===
+        loadParams();     // Читаем URL
+        createSparkles(); // Рисуем фон
     </script>
 </body>
 </html>
+
