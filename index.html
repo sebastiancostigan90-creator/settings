@@ -3,337 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aimi AI — Личный кабинет</title>
+    <title>Aimi AI — Личный Кабинет</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0a0d14; /* Глубокий темный */
-            --glass-bg: rgba(25, 30, 45, 0.85);
-            --accent-yellow: #ffcc00; /* Солнечный желтый */
-            --accent-blue: #00ccff;   /* Небесно-голубой */
-            --text-main: #fffffe;
-            --text-dim: #a0a5b5;
-            --border-gold: rgba(255, 204, 0, 0.3);
-            --border-blue: rgba(0, 204, 255, 0.3);
+            --bg-deep: #050608;
+            --rc-glass: rgba(18, 22, 33, 0.9);
+            --rc-gold: #f4d03f;
+            --rc-gold-dark: #b7950b;
+            --rc-blue: #3498db;
+            --rc-cyan: #5dade2;
+            --text-gold: #fef5d4;
+            --border-glow: rgba(244, 208, 63, 0.25);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-deep);
+            color: #ffffff;
             margin: 0; padding: 0;
             overflow-x: hidden;
-            min-height: 100vh;
+            background: radial-gradient(circle at center, #0f1c2e 0%, #050608 100%);
         }
 
-        /* АНИМАЦИЯ ФОНА */
-        .bg-animation {
+        /* МАГИЧЕСКИЙ ФОН */
+        #magic-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none; overflow: hidden;
-            background: radial-gradient(circle at 50% -20%, #1a1f35 0%, #0a0d14 100%);
+            z-index: 0; pointer-events: none;
         }
-        .sun-ray {
-            position: absolute; top: -100px; left: 50%; width: 200%; height: 200%;
-            background: conic-gradient(from 180deg at 50% 50%, transparent 0%, rgba(255, 204, 0, 0.03) 10%, transparent 20%);
-            animation: rotate 60s linear infinite; transform-origin: top center;
+        .nebula {
+            position: absolute; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.1) 0%, transparent 70%);
+            filter: blur(50px); animation: pulse 10s infinite alternate;
         }
-        .particle {
-            position: absolute; background: var(--accent-yellow); border-radius: 50%; opacity: 0.3;
-            animation: float 15s infinite linear;
-        }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes float {
-            0% { transform: translateY(110vh) translateX(0); }
-            50% { transform: translateY(50vh) translateX(20px); }
-            100% { transform: translateY(-10vh) translateX(-10px); }
-        }
+        @keyframes pulse { from { opacity: 0.3; transform: scale(1); } to { opacity: 0.6; transform: scale(1.5); } }
 
-        .container { position: relative; z-index: 1; padding: 20px; padding-bottom: 120px; }
+        .container { position: relative; z-index: 1; padding: 20px; padding-bottom: 110px; }
 
         /* HEADER */
-        .header { text-align: center; margin-bottom: 25px; }
-        .logo { font-size: 28px; font-weight: 800; color: var(--accent-yellow); letter-spacing: 1px; margin-bottom: 5px; }
-        .motto { font-size: 13px; color: var(--accent-blue); opacity: 0.8; font-style: italic; }
-
-        /* WALLET / STATS */
-        .wallet-card {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border-gold);
-            border-radius: 50px; padding: 12px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 25px;
+        .header { text-align: center; margin-bottom: 20px; padding-top: 10px; }
+        .logo { 
+            font-size: 34px; font-weight: 900; 
+            background: linear-gradient(to bottom, var(--rc-gold), var(--rc-cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(244, 208, 63, 0.4);
+            letter-spacing: 2px; font-variant: small-caps;
         }
-        .stat-item { display: flex; align-items: center; gap: 8px; font-weight: bold; }
-        .icon-blue { color: var(--accent-blue); font-size: 18px; }
-        .icon-yellow { color: var(--accent-yellow); font-size: 18px; }
-
-        /* ГРУППЫ НАСТРОЕК (СТИЛЬ ДИАЛОГА) */
-        .glass-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--border-blue);
-            border-radius: 18px; padding: 20px; margin-bottom: 20px;
-            position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
-        /* Хвостик диалога как в КР */
-        .glass-card::after {
-            content: ''; position: absolute; left: 25px; bottom: -10px;
-            border-left: 10px solid transparent; border-right: 10px solid transparent;
-            border-top: 10px solid var(--glass-bg);
+        .status-badge {
+            display: inline-block; padding: 4px 12px; border-radius: 20px;
+            font-size: 10px; font-weight: bold; text-transform: uppercase;
+            margin-top: 5px; border: 1px solid var(--rc-gold);
+            color: var(--rc-gold); background: rgba(244, 208, 63, 0.1);
         }
 
-        h2 { font-size: 16px; margin: 0 0 15px 0; color: var(--accent-yellow); display: flex; align-items: center; gap: 10px; }
-        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-dim); }
+        /* STATS (RC STYLE) */
+        .stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;
+        }
+        .stat-box {
+            background: var(--rc-glass); border: 1px solid var(--border-glow);
+            border-radius: 12px; padding: 10px; text-align: center;
+            box-shadow: inset 0 0 10px rgba(244, 208, 63, 0.05);
+        }
+        .stat-box .val { font-size: 18px; font-weight: 800; color: #fff; display: block; }
+        .stat-box .lab { font-size: 10px; color: var(--rc-cyan); text-transform: uppercase; }
+
+        /* DIALOG CARDS */
+        .dialog-card {
+            background: var(--rc-glass);
+            border: 1px solid var(--border-glow);
+            border-left: 4px solid var(--rc-gold);
+            border-radius: 15px; padding: 20px; margin-bottom: 25px;
+            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        .dialog-card::after {
+            content: ''; position: absolute; left: 30px; bottom: -10px;
+            border-left: 12px solid transparent; border-right: 12px solid transparent;
+            border-top: 12px solid var(--rc-glass);
+        }
+
+        h2 { font-size: 13px; color: var(--rc-gold); text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 15px 0; }
+        label { font-size: 12px; color: var(--rc-cyan); display: block; margin-bottom: 6px; }
 
         input[type="text"], textarea {
-            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 14px; color: white; box-sizing: border-box;
-            margin-bottom: 15px; font-size: 15px; outline: none; transition: 0.3s;
+            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 12px; color: #fff; font-size: 14px; outline: none;
+            box-sizing: border-box; margin-bottom: 10px;
         }
-        input:focus { border-color: var(--accent-blue); }
+        input:focus { border-color: var(--rc-gold); }
 
-        /* КНОПКИ ВЫБОРА */
-        .button-group {
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
-            background: rgba(0,0,0,0.2); padding: 5px; border-radius: 14px; margin-bottom: 8px;
+        /* CHOICE BUTTONS (Vertical RC Style) */
+        .choice-stack { display: flex; flex-direction: column; gap: 10px; }
+        .choice-item {
+            background: linear-gradient(180deg, #232a35 0%, #11171f 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; padding: 14px; color: #fff;
+            text-align: center; font-size: 14px; font-weight: 500;
+            cursor: pointer; transition: 0.3s;
         }
-        .choice-btn {
-            background: transparent; border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-dim); padding: 12px 5px; border-radius: 10px;
-            font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.3s;
-        }
-        .choice-btn.active {
-            background: linear-gradient(135deg, #ffcc00, #ff9900);
-            color: #000; border: none; font-weight: 800;
-            box-shadow: 0 4px 12px rgba(255, 204, 0, 0.4);
+        .choice-item.active {
+            background: linear-gradient(180deg, #2c240a 0%, #000000 100%);
+            border: 1.5px solid var(--rc-gold); color: var(--rc-gold);
+            box-shadow: 0 0 15px rgba(244, 208, 63, 0.2);
         }
 
-        .desc-text { font-size: 11px; color: var(--text-dim); margin: 0 0 15px 4px; line-height: 1.4; }
+        .desc-tip { font-size: 11px; color: #85929e; margin-top: 6px; line-height: 1.4; font-style: italic; }
 
-        /* ПЕРЕКЛЮЧАТЕЛЬ */
-        .toggle-container {
+        /* TOGGLE 18+ */
+        .toggle-box {
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(0,0,0,0.2); padding: 12px 15px; border-radius: 12px;
+            background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px;
         }
-        .switch { position: relative; width: 48px; height: 24px; }
+        .switch { position: relative; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
             background: #333; transition: .4s; border-radius: 34px;
         }
         .slider:before {
-            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-            background: white; transition: .4s; border-radius: 50%;
+            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+            background: #fff; transition: .4s; border-radius: 50%;
         }
-        input:checked + .slider { background: var(--accent-blue); }
-        input:checked + .slider:before { transform: translateX(24px); }
+        input:checked + .slider { background: #e74c3c; }
+        input:checked + .slider:before { transform: translateX(22px); }
 
-        /* НИЖНЯЯ ПАНЕЛЬ СОХРАНЕНИЯ */
-        .save-bar {
-            position: fixed; bottom: 85px; left: 0; width: 100%;
-            padding: 0 20px; box-sizing: border-box; z-index: 100;
-        }
-        .save-btn {
-            background: linear-gradient(90deg, #00ccff, #0088ff); color: white;
-            width: 100%; padding: 18px; border-radius: 15px; border: none;
-            font-weight: 800; font-size: 16px; letter-spacing: 1px;
-            box-shadow: 0 8px 20px rgba(0, 136, 255, 0.3);
-        }
-
-        /* МАГАЗИН */
-        .shop-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; background: rgba(255,255,255,0.03);
-            border-radius: 14px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);
-        }
-        .shop-info b { display: block; color: var(--accent-yellow); font-size: 15px; margin-bottom: 2px; }
-        .shop-info span { font-size: 11px; color: var(--text-dim); }
-        .buy-btn {
-            background: var(--accent-yellow); color: #000; border: none;
-            padding: 10px 18px; border-radius: 10px; font-weight: bold; font-size: 13px;
-        }
-
-        /* НАВИГАЦИЯ */
+        /* NAVIGATION BAR */
         .nav-bar {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(10, 13, 20, 0.95); backdrop-filter: blur(10px);
-            display: flex; border-top: 1px solid var(--border-gold); z-index: 101;
+            background: #000; border-top: 2px solid var(--rc-gold-dark);
+            display: flex; z-index: 100;
         }
-        .nav-item {
-            flex: 1; text-align: center; color: var(--text-dim);
-            text-decoration: none; font-size: 10px; padding: 12px 0; transition: 0.3s;
-            border-bottom: 3px solid transparent;
+        .nav-link {
+            flex: 1; text-align: center; color: #566573;
+            padding: 14px 0; font-size: 10px; text-decoration: none;
+            text-transform: uppercase; letter-spacing: 1px;
         }
-        .nav-item.active { color: var(--accent-yellow); border-bottom: 3px solid var(--accent-yellow); background: rgba(255, 204, 0, 0.05); }
-        .nav-icon { font-size: 22px; display: block; margin-bottom: 2px; }
+        .nav-link.active { color: var(--rc-gold); background: rgba(244, 208, 63, 0.05); }
+        .nav-link i { font-size: 20px; display: block; margin-bottom: 4px; }
 
-        .tab-content { display: none; animation: slideUp 0.3s ease-out; }
-        .tab-content.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* SHOP ITEMS */
+        .shop-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+            padding: 15px; border-radius: 12px; margin-bottom: 12px;
+        }
+        .shop-row b { color: var(--rc-gold); font-size: 14px; }
+        .price-btn {
+            background: var(--rc-gold); color: #000; border: none;
+            padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 13px;
+        }
+
+        .save-btn {
+            background: var(--rc-blue); color: #fff; width: 100%; padding: 18px;
+            border-radius: 12px; border: 1px solid var(--rc-gold);
+            font-weight: bold; font-size: 16px; text-transform: uppercase;
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.3);
+        }
     </style>
 </head>
 <body>
-    <div class="bg-animation" id="bg-anim">
-        <div class="sun-ray"></div>
+    <div id="magic-bg">
+        <div class="nebula" style="top: 10%; left: 10%;"></div>
+        <div class="nebula" style="bottom: 20%; right: 10%; background: radial-gradient(circle, rgba(244, 208, 63, 0.05) 0%, transparent 70%);"></div>
     </div>
 
     <div class="container">
         <div class="header">
             <div class="logo">Aimi AI</div>
-            <div class="motto">Твоя история. Твой выбор.</div>
+            <div class="status-badge" id="user_rank">Обычный режим</div>
         </div>
 
-        <!-- Кошелек -->
-        <div class="wallet-card">
-            <div class="stat-item">
-                <span class="icon-blue">⚡</span>
-                <span id="msgs_left_display">...</span>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span class="lab">⚡ Сообщений на сегодня</span>
+                <span class="val" id="daily_left">...</span>
             </div>
-            <div class="stat-item">
-                <span class="icon-yellow">💎</span>
-                <span id="coins_display">0</span>
+            <div class="stat-box">
+                <span class="lab">💎 Алмазы (Баланс)</span>
+                <span class="val" id="coins_display">0</span>
             </div>
         </div>
 
         <!-- ТАБ: НАСТРОЙКИ -->
         <div id="settings-tab" class="tab-content active">
-            <div class="glass-card">
-                <h2>👤 Твой образ</h2>
-                <label>Ваше имя в истории</label>
-                <input type="text" id="user_name" placeholder="Как персонаж будет вас называть?">
-                <label>Ваша роль (кто вы?)</label>
-                <input type="text" id="user_role" placeholder="Напр: Студентка, Тайный гость...">
+            <div class="dialog-card">
+                <h2>Главный Герой</h2>
+                <label>Твое Имя в этом мире</label>
+                <input type="text" id="user_name" placeholder="Введите имя...">
+                <label>Твоя Роль в сюжете</label>
+                <input type="text" id="user_role" placeholder="Напр: Капитан стражи...">
             </div>
 
-            <div class="glass-card">
-                <h2>💬 Стиль диалога</h2>
-                <label>Объем ответов персонажа</label>
-                <div class="button-group" id="msg_len">
-                    <button class="choice-btn" onclick="setChoice('msg_len', 1, this)">Коротко</button>
-                    <button class="choice-btn" onclick="setChoice('msg_len', 2, this)">Средне</button>
-                    <button class="choice-btn" onclick="setChoice('msg_len', 3, this)">Книжно</button>
+            <div class="dialog-card">
+                <h2>Повествование</h2>
+                <label>Объем ответов персонажа:</label>
+                <div class="choice-stack" id="msg_len">
+                    <div class="choice-item" onclick="setChoice('msg_len', 1, this)">Короткие фразы</div>
+                    <div class="choice-item" onclick="setChoice('msg_len', 2, this)">Художественный баланс</div>
+                    <div class="choice-item" onclick="setChoice('msg_len', 3, this)">Литературный роман</div>
                 </div>
-                <p class="desc-text" id="desc_msg_len">Влияет на длину сообщений: от кратких фраз до целых глав романа.</p>
-
-                <label>Предсказуемость сюжета</label>
-                <div class="button-group" id="predictability">
-                    <button class="choice-btn" onclick="setChoice('predictability', 1, this)">Логично</button>
-                    <button class="choice-btn" onclick="setChoice('predictability', 2, this)">Баланс</button>
-                    <button class="choice-btn" onclick="setChoice('predictability', 3, this)">Безумно</button>
-                </div>
-                <p class="desc-text" id="desc_predictability">Насколько неожиданными будут действия персонажа и повороты событий.</p>
+                <p class="desc-tip" id="desc_msg_len">Задает длину текста — от краткой сути до глубоких описаний чувств.</p>
             </div>
 
-            <div class="glass-card">
-                <h2>🔞 Атмосфера</h2>
-                <div class="toggle-container">
-                    <span>Режим для взрослых (18+)</span>
+            <div class="dialog-card">
+                <h2>Сплетение Судеб</h2>
+                <label>Предсказуемость событий:</label>
+                <div class="choice-stack" id="predictability">
+                    <div class="choice-item" onclick="setChoice('predictability', 1, this)">Логичное развитие</div>
+                    <div class="choice-item" onclick="setChoice('predictability', 2, this)">Драматические витки</div>
+                    <div class="choice-item" onclick="setChoice('predictability', 3, this)">Абсолютный хаос</div>
+                </div>
+                <p class="desc-tip" id="desc_predictability">Насколько часто сюжет будет удивлять вас резкими поворотами.</p>
+            </div>
+
+            <div class="dialog-card">
+                <h2>Атмосфера</h2>
+                <div class="toggle-box">
+                    <span style="font-size: 14px; font-weight: 600;">Режим 18+</span>
                     <label class="switch">
                         <input type="checkbox" id="nsfw_mode" onchange="togglePassionVisibility()">
                         <span class="slider"></span>
                     </label>
                 </div>
-                <p class="desc-text">Включает возможность откровенных сцен и более грубого поведения.</p>
+                <p class="desc-tip">Доступ к откровенным сценам, острым эмоциям и взрослой лексике.</p>
 
-                <div id="passion_block" style="display: none; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                    <label>Градус страсти</label>
-                    <div class="button-group" id="passion_lvl">
-                        <button class="choice-btn" onclick="setChoice('passion_lvl', 1, this)">Нежно</button>
-                        <button class="choice-btn" onclick="setChoice('passion_lvl', 2, this)">Горячо</button>
-                        <button class="choice-btn" onclick="handleMaxiClick(this)">Макси 🔥</button>
+                <div id="passion_block" style="display: none; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                    <label>Градус страсти:</label>
+                    <div class="choice-stack" id="passion_lvl">
+                        <div class="choice-item" onclick="setChoice('passion_lvl', 1, this)">Нежные касания</div>
+                        <div class="choice-item" onclick="setChoice('passion_lvl', 2, this)">Яркое пламя</div>
+                        <div class="choice-item" style="border-color: #e74c3c; color: #e74c3c;" onclick="handleMaxiClick(this)">Макси 🔥</div>
                     </div>
-                    <p class="desc-text">Определяет детальность описания интимных и эмоциональных моментов.</p>
+                    <p class="desc-tip" id="desc_passion_lvl">Определяет откровенность и детальность близости.</p>
                 </div>
             </div>
 
-            <div class="glass-card">
-                <h2>🗺️ Место действия</h2>
-                <label>Текущий сеттинг</label>
-                <textarea id="setting" rows="2" placeholder="Опишите, где вы сейчас находитесь..."></textarea>
-            </div>
-
-            <div class="save-bar">
-                <button class="save-btn" onclick="saveData()">💾 Сохранить и вернуться</button>
-            </div>
+            <button class="save-btn" onclick="saveData()">🔮 Сохранить и продолжить</button>
         </div>
 
         <!-- ТАБ: МАГАЗИН -->
-        <div id="shop-tab" class="tab-content">
-            <div class="glass-card">
-                <h2>💎 Пополнить Алмазы</h2>
+        <div id="shop-tab" class="tab-content" style="display: none;">
+            <div class="dialog-card">
+                <h2>Магическая Лавка</h2>
+                <p style="font-size: 12px; color: var(--rc-cyan); margin-bottom: 20px;">Твоя история никогда не должна закончиться.</p>
                 
-                <div class="shop-item">
-                    <div class="shop-info">
-                        <b>Малая горсть (100)</b>
-                        <span>+100 лимитных сообщений</span>
+                <div class="shop-row">
+                    <div>
+                        <b>Шкатулка (100 💎)</b><br>
+                        <span class="desc-tip">Запас на долгий путь.</span>
                     </div>
-                    <button class="buy-btn" onclick="buy(100)">50 ⭐</button>
+                    <button class="price-btn" onclick="buy(100)">50 ⭐</button>
                 </div>
 
-                <div class="shop-item">
-                    <div class="shop-info">
-                        <b>Большой мешочек (500)</b>
-                        <span>+500 лимитных сообщений</span>
+                <div class="shop-row">
+                    <div>
+                        <b>Сундук (500 💎)</b><br>
+                        <span class="desc-tip">Для тех, кто живет историями.</span>
                     </div>
-                    <button class="buy-btn" onclick="buy(500)">200 ⭐</button>
+                    <button class="price-btn" onclick="buy(500)">200 ⭐</button>
                 </div>
 
-                <div class="shop-item" style="border: 1px solid var(--accent-yellow);">
-                    <div class="shop-info">
-                        <b style="color: var(--accent-yellow)">👑 Вечный VIP</b>
-                        <span>Безлимит и все слоты навсегда</span>
+                <div class="shop-row" style="border: 1px solid var(--rc-gold);">
+                    <div>
+                        <b style="color: var(--rc-gold);">👑 Вечный VIP</b><br>
+                        <span class="desc-tip">Безлимит и власть над сюжетом.</span>
                     </div>
-                    <button class="buy-btn" onclick="buy('vip')">500 ⭐</button>
+                    <button class="price-btn" onclick="buy('vip')">500 ⭐</button>
                 </div>
-            </div>
-
-            <div class="glass-card" style="border-left-color: var(--accent-blue);">
-                <h2>👥 Пригласи друга</h2>
-                <p style="font-size: 13px; color: var(--text-dim);">Получай по <b>50 Алмазов</b> за каждого приглашенного новичка!</p>
-                <button class="save-btn" style="padding: 12px; font-size: 14px; position: static;" onclick="copyRefLink()">
-                    🔗 Копировать ссылку
-                </button>
             </div>
         </div>
     </div>
 
-    <!-- Навигация -->
+    <!-- NAVIGATION -->
     <div class="nav-bar">
-        <a href="#" class="nav-item active" onclick="switchTab('settings', this)">
-            <span class="nav-icon">⚙️</span>Настройки
+        <a href="#" class="nav-link active" onclick="switchTab('settings', this)">
+            <i>⚙️</i>Сюжет
         </a>
-        <a href="#" class="nav-item" onclick="switchTab('shop', this)">
-            <span class="nav-icon">🛍️</span>Магазин
+        <a href="#" class="nav-link" onclick="switchTab('shop', this)">
+            <i>🛍️</i>Магазин
         </a>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.headerColor = '#050608';
 
         let choices = { msg_len: 2, predictability: 2, passion_lvl: 1 };
         let isPremium = false;
-        let userId = 0;
 
         const descriptions = {
-            msg_len: { 1: "Минимум воды, акцент на диалогах.", 2: "Оптимальный баланс описаний и речи.", 3: "Длинные литературные ответы (VIP)." },
-            predictability: { 1: "Логичное поведение персонажа.", 2: "Стандартные сюжетные повороты.", 3: "Полный хаос и неожиданности." }
+            msg_len: { 1: "Акцент на быстрых диалогах и действии.", 2: "Оптимальный баланс речи и описания окружения.", 3: "Глубокое погружение, длинные ответы в стиле книг." },
+            predictability: { 1: "Персонажи действуют логично и последовательно.", 2: "Классическая драма с неожиданными секретами.", 3: "Сюжет может перевернуться с ног на голову в любой момент." },
+            passion_lvl: { 1: "Чувственная романтика, внимание к чувствам и взглядам.", 2: "Откровенные сцены с детальным описанием действий.", 3: "Предельная страсть без ограничений и цензуры (VIP)." }
         };
 
         function loadParams() {
             const urlParams = new URLSearchParams(window.location.search);
-            userId = urlParams.get('id') || 0;
-            
             const total = parseInt(urlParams.get('total') || '0');
             const daily = parseInt(urlParams.get('daily') || '0');
-            const coins = parseInt(urlParams.get('coins') || '0');
             isPremium = urlParams.get('prem') === '1';
-            
-            document.getElementById('coins_display').innerText = coins;
-            document.getElementById('msgs_left_display').innerText = isPremium ? "Безлимит" : (total + daily);
+
+            document.getElementById('daily_left').innerText = isPremium ? "∞" : daily;
+            document.getElementById('coins_display').innerText = urlParams.get('coins') || '0';
+            document.getElementById('user_rank').innerText = isPremium ? "Режим VIP" : "Обычный режим";
 
             if (urlParams.get('name')) document.getElementById('user_name').value = urlParams.get('name');
             if (urlParams.get('role')) document.getElementById('user_role').value = urlParams.get('role');
-            if (urlParams.get('set')) document.getElementById('setting').value = urlParams.get('set');
             
             updateBtn('msg_len', urlParams.get('mlen') || 2);
             updateBtn('predictability', urlParams.get('pred') || 2);
@@ -350,10 +326,10 @@
             choices[key] = val;
             const container = document.getElementById(key);
             if (!container) return;
-            container.querySelectorAll('.choice-btn').forEach((btn, i) => {
+            container.querySelectorAll('.choice-item').forEach((btn, i) => {
                 btn.classList.toggle('active', i + 1 === val);
             });
-            if (descriptions[key]) document.getElementById('desc_' + key).innerText = descriptions[key][val];
+            document.getElementById('desc_' + key).innerText = descriptions[key][val];
         }
 
         function setChoice(key, val, el) {
@@ -362,28 +338,22 @@
         }
 
         function togglePassionVisibility() {
-            document.getElementById('passion_block').style.display = document.getElementById('nsfw_mode').checked ? 'block' : 'none';
+            const show = document.getElementById('nsfw_mode').checked;
+            document.getElementById('passion_block').style.display = show ? 'block' : 'none';
         }
 
         function handleMaxiClick(el) {
             if (!isPremium) {
-                tg.showPopup({ title: 'Режим "Макси"', message: 'Доступен только обладателям VIP статуса.', buttons: [{type: 'ok', text: 'Понятно'}] });
+                tg.showPopup({ title: 'Выбор Судьбы', message: 'Уровень страсти "Макси" доступен только обладателям VIP-статуса.', buttons: [{type: 'ok', text: 'Понятно'}] });
             } else {
                 setChoice('passion_lvl', 3, el);
             }
         }
 
-        function copyRefLink() {
-            const link = `https://t.me/Aimi_Bot_Name?start=ref${userId}`;
-            const el = document.createElement('textarea'); el.value = link; document.body.appendChild(el);
-            el.select(); document.execCommand('copy'); document.body.removeChild(el);
-            tg.showAlert("Ссылка скопирована!");
-        }
-
         function switchTab(tab, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(tab + '-tab').classList.add('active');
+            document.getElementById('settings-tab').style.display = tab === 'settings' ? 'block' : 'none';
+            document.getElementById('shop-tab').style.display = tab === 'shop' ? 'block' : 'none';
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
             tg.HapticFeedback.selectionChanged();
         }
@@ -393,36 +363,20 @@
                 action: 'save_profile',
                 user_name: document.getElementById('user_name').value,
                 user_role: document.getElementById('user_role').value,
-                setting: document.getElementById('setting').value,
+                setting: "", // По умолчанию
                 msg_len: choices.msg_len,
                 predictability: choices.predictability,
                 is_nsfw: document.getElementById('nsfw_mode').checked,
                 passion_lvl: choices.passion_lvl
             };
             tg.sendData(JSON.stringify(data));
-            tg.close();
         }
 
         function buy(item) {
             tg.sendData(JSON.stringify({action: 'buy', item: item}));
         }
 
-        // Пыльца на фоне
-        function initParticles() {
-            const container = document.getElementById('bg-anim');
-            for(let i=0; i<15; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.width = p.style.height = (Math.random() * 3 + 2) + 'px';
-                p.style.animationDelay = Math.random() * 10 + 's';
-                p.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                container.appendChild(p);
-            }
-        }
-
         loadParams();
-        initParticles();
     </script>
 </body>
 </html>
