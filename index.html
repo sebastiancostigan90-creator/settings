@@ -3,283 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aimi AI — Твоя история</title>
+    <title>Aimi AI — Настройки</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-main: #0f0a1e;
-            --accent-pink: #ff85a1;
-            --accent-purple: #b2a4f4;
-            --accent-cyan: #70e2ff;
-            --glass: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --text: #ffffff;
-            --text-dim: #d1c4e9;
+            --bg-main: #050505;
+            --accent-yellow: #FFD700;
+            --accent-blue: #00E5FF;
+            --glass: rgba(30, 30, 35, 0.7);
+            --glass-active: rgba(255, 215, 0, 0.1);
+            --border: rgba(255, 215, 0, 0.25);
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg-main);
-            color: var(--text);
+            color: var(--text-main);
             margin: 0; padding: 0;
             overflow-x: hidden;
-            background: radial-gradient(circle at 50% 0%, #2a1b4d 0%, #0f0a1e 100%);
+            background: radial-gradient(circle at 50% 0%, #1a1a10 0%, #050505 100%);
         }
 
-        /* МАГИЧЕСКАЯ ПЫЛЬЦА (Движение) */
-        .dust-container {
+        /* АНИМИРОВАННЫЙ ФОН */
+        .dust-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0; pointer-events: none;
         }
-        .particle {
-            position: absolute; background: white; border-radius: 50%;
-            filter: blur(1px); opacity: 0.3;
-            animation: fall var(--speed) infinite linear;
+        .dust {
+            position: absolute; background: var(--accent-yellow); border-radius: 50%;
+            filter: blur(1px); opacity: 0.15;
+            animation: move var(--s) infinite linear;
         }
-        @keyframes fall {
-            from { transform: translateY(-10vh) translateX(0); opacity: 0.3; }
-            to { transform: translateY(110vh) translateX(20px); opacity: 0; }
+        @keyframes move {
+            from { transform: translateY(110vh) translateX(0); }
+            to { transform: translateY(-10vh) translateX(30px); opacity: 0; }
         }
 
         .container { position: relative; z-index: 1; padding: 15px; padding-bottom: 100px; }
 
         /* HEADER */
-        .header { text-align: center; margin: 10px 0 20px; }
+        .header { text-align: center; margin: 15px 0 25px; }
         .logo { 
-            font-size: 30px; font-weight: 800;
-            background: linear-gradient(to right, var(--accent-pink), var(--accent-cyan));
+            font-size: 32px; font-weight: 900; letter-spacing: -1px;
+            background: linear-gradient(to right, #fff, var(--accent-yellow));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 10px rgba(178, 164, 244, 0.4));
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
         }
-        .rank-badge {
-            display: inline-block; padding: 5px 15px; border-radius: 20px;
-            background: var(--glass); border: 1px solid var(--glass-border);
-            font-size: 11px; font-weight: 700; color: var(--accent-purple);
-            text-transform: uppercase; margin-top: 8px; letter-spacing: 1px;
+        .badge {
+            display: inline-block; padding: 4px 14px; border-radius: 4px;
+            background: rgba(255, 215, 0, 0.1); border: 1px solid var(--border);
+            font-size: 11px; font-weight: 800; color: var(--accent-yellow);
+            text-transform: uppercase; margin-top: 10px;
+        }
+
+        /* CURRENCY ICON */
+        .heart-icon {
+            display: inline-block; width: 18px; height: 18px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FFD700"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') no-repeat center;
+            background-size: contain; vertical-align: middle; margin-right: 4px;
         }
 
         /* DASHBOARD */
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-item {
-            background: var(--glass); backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border); border-radius: 20px;
+        .dash { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .dash-card {
+            background: var(--glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: 12px;
             padding: 15px; text-align: center;
         }
-        .stat-item small { display: block; font-size: 9px; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 4px; }
-        .stat-item b { font-size: 20px; letter-spacing: 1px; }
+        .dash-card small { display: block; font-size: 10px; color: var(--accent-blue); text-transform: uppercase; font-weight: 800; margin-bottom: 5px; }
+        .dash-card b { font-size: 22px; font-weight: 900; }
 
-        /* CARDS (Dialog Style) */
-        .card {
+        /* PANELS */
+        .panel {
             background: var(--glass); backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 24px;
-            padding: 22px; margin-bottom: 20px; position: relative;
+            border: 1px solid var(--border); border-radius: 16px;
+            padding: 20px; margin-bottom: 20px; position: relative;
         }
-        .card::after {
-            content: ''; position: absolute; left: 30px; bottom: -12px;
-            width: 0; height: 0; border-left: 12px solid transparent;
-            border-right: 12px solid transparent; border-top: 12px solid var(--glass-border);
+        .panel::after {
+            content: ''; position: absolute; left: 25px; bottom: -10px;
+            width: 20px; height: 10px; background: var(--glass);
+            clip-path: polygon(0 0, 100% 0, 50% 100%); border-top: 1px solid var(--border);
         }
-        .card h2 { font-size: 15px; color: var(--accent-pink); margin: 0 0 15px 0; font-weight: 700; }
+        h2 { font-size: 14px; color: var(--accent-yellow); margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* INPUTS */
-        .input-box { margin-bottom: 15px; }
-        .input-box label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
+        .input-wrap { margin-bottom: 15px; }
+        .input-wrap label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 6px; font-weight: 600; }
         input, textarea {
-            width: 100%; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border);
-            border-radius: 14px; padding: 14px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box;
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+            border-radius: 8px; padding: 12px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box;
         }
-        input:focus { border-color: var(--accent-cyan); }
+        input:focus { border-color: var(--accent-blue); box-shadow: 0 0 10px rgba(0, 229, 255, 0.2); }
 
-        /* BUTTONS */
-        .btn-stack { display: flex; flex-direction: column; gap: 10px; }
-        .btn-choice {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
-            border-radius: 15px; padding: 15px; color: #fff; text-align: center;
-            font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.3s;
+        /* CHOICES */
+        .choice-group { display: flex; flex-direction: column; gap: 8px; }
+        .choice-btn {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: 8px; padding: 14px; color: #fff; text-align: center;
+            font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s;
         }
-        .btn-choice.active {
-            background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
-            color: #000; border: none; box-shadow: 0 0 20px rgba(178, 164, 244, 0.4);
-        }
-
-        .hint {
-            margin-top: 12px; padding: 12px; border-radius: 14px;
-            background: rgba(0, 0, 0, 0.2); border-left: 3px solid var(--accent-cyan);
-            font-size: 12px; line-height: 1.5; color: var(--text-dim);
+        .choice-btn.active {
+            background: var(--accent-yellow); color: #000; border-color: var(--accent-yellow);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
         }
 
-        /* TOGGLE */
+        .hint-block {
+            margin-top: 12px; padding: 12px; border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3); border-left: 3px solid var(--accent-yellow);
+            font-size: 12px; line-height: 1.4; color: var(--text-dim);
+        }
+
+        /* TOGGLE 18+ */
         .toggle-row { display: flex; justify-content: space-between; align-items: center; }
-        .switch { position: relative; width: 44px; height: 24px; }
+        .switch { position: relative; width: 48px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background: #333; transition: .4s; border-radius: 30px;
+            background: #222; transition: .4s; border-radius: 4px; border: 1px solid var(--border);
         }
         .slider:before {
             position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-            background: white; transition: .4s; border-radius: 50%;
+            background: white; transition: .4s;
         }
-        input:checked + .slider { background: var(--accent-pink); }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider { background: #600; border-color: #f00; }
+        input:checked + .slider:before { transform: translateX(22px); background: #f00; }
 
         /* SHOP */
-        .shop-item {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 18px; margin-bottom: 12px;
+        .shop-row {
+            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border);
+            border-radius: 12px; padding: 15px; margin-bottom: 10px;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .shop-item b { display: block; color: var(--accent-cyan); font-size: 14px; }
-        .shop-item span { font-size: 11px; color: var(--text-dim); }
+        .shop-row b { color: var(--accent-blue); font-size: 14px; }
+        .shop-row span { font-size: 11px; color: var(--text-dim); }
         .buy-btn {
-            background: var(--accent-purple); color: #000; border: none;
-            padding: 10px 16px; border-radius: 12px; font-weight: 800; font-size: 13px;
+            background: var(--accent-yellow); color: #000; border: none;
+            padding: 10px 18px; border-radius: 4px; font-weight: 900; font-size: 12px;
         }
 
         /* NAVIGATION */
-        .nav {
+        .navbar {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(15, 10, 30, 0.95); backdrop-filter: blur(25px);
-            display: flex; border-top: 1px solid var(--glass-border); z-index: 100;
+            background: #000; border-top: 1px solid var(--border);
+            display: flex; z-index: 100;
         }
-        .nav-item {
+        .nav-link {
             flex: 1; text-align: center; padding: 15px 0;
-            color: #777; text-decoration: none; font-size: 11px; font-weight: 700;
+            color: #555; text-decoration: none; font-size: 10px; font-weight: 800; text-transform: uppercase;
         }
-        .nav-item i { font-style: normal; font-size: 18px; display: block; margin-bottom: 2px; }
-        .nav-item.active { color: var(--accent-pink); }
+        .nav-link.active { color: var(--accent-yellow); background: rgba(255, 215, 0, 0.05); }
+        .nav-link i { display: block; font-size: 20px; margin-bottom: 2px; font-style: normal; }
 
-        .save-btn {
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
-            color: #000; width: 100%; padding: 20px; border-radius: 20px;
-            border: none; font-weight: 900; font-size: 16px; text-transform: uppercase;
-            box-shadow: 0 10px 25px rgba(112, 226, 255, 0.3); margin-top: 10px;
+        .submit-progress {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-yellow));
+            color: #000; width: 100%; padding: 20px; border-radius: 12px;
+            border: none; font-weight: 900; font-size: 15px; text-transform: uppercase;
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2); margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="dust-container" id="dust"></div>
+    <div class="dust-layer" id="dust-layer"></div>
 
     <div class="container">
         <div class="header">
             <div class="logo">Aimi AI</div>
-            <div class="rank-badge" id="rank_badge">Обычный профиль</div>
+            <div class="badge" id="user_rank">Обычный профиль</div>
         </div>
 
-        <div class="stats">
-            <div class="stat-item">
+        <div class="dash">
+            <div class="dash-card">
                 <small>Бесплатные ответы</small>
                 <b id="msgs_val">...</b>
             </div>
-            <div class="stat-item">
-                <small>Твои Алмазы</small>
-                <b id="coins_val">0 💎</b>
+            <div class="dash-card">
+                <small>Баланс Hearts</small>
+                <b><i class="heart-icon"></i><span id="coins_val">0</span></b>
             </div>
         </div>
 
-        <!-- ТАБ: НАСТРОЙКИ -->
+        <!-- SETTINGS -->
         <div id="tab-settings">
-            <div class="card">
-                <h2>✨ Профиль Героини</h2>
-                <div class="input-box">
-                    <label>Твое Имя (как персонаж зовет тебя)</label>
-                    <input type="text" id="user_name" placeholder="Напр: Принцесса">
+            <div class="panel">
+                <h2>🖋️ Твой профиль</h2>
+                <div class="input-wrap">
+                    <label>Твое имя (как персонаж зовет тебя)</label>
+                    <input type="text" id="user_name" placeholder="Напр: Теневой охотник">
                 </div>
-                <div class="input-box">
-                    <label>Твоя Роль (кто ты в этой истории)</label>
-                    <input type="text" id="user_role" placeholder="Напр: Тайная поклонница">
+                <div class="input-wrap">
+                    <label>Твоя роль (кто ты в истории)</label>
+                    <input type="text" id="user_role" placeholder="Напр: Заключенный, Наставник">
                 </div>
             </div>
 
-            <div class="card">
-                <h2>📖 Повествование</h2>
-                <div class="btn-stack" id="msg_len">
-                    <div class="btn-choice" onclick="setChoice('msg_len', 1, this)">Коротко</div>
-                    <div class="btn-choice" onclick="setChoice('msg_len', 2, this)">Средне</div>
-                    <div class="btn-choice" onclick="setChoice('msg_len', 3, this)">Роман</div>
+            <div class="panel">
+                <h2>📖 Глубина текста</h2>
+                <div class="choice-group" id="msg_len">
+                    <div class="choice-btn" onclick="setChoice('msg_len', 1, this)">Коротко</div>
+                    <div class="choice-btn" onclick="setChoice('msg_len', 2, this)">Средне</div>
+                    <div class="choice-btn" onclick="setChoice('msg_len', 3, this)">Литературный роман</div>
                 </div>
-                <div class="hint" id="hint_msg_len">...</div>
+                <div class="hint-block" id="hint_msg_len">...</div>
             </div>
 
-            <div class="card">
+            <div class="panel">
                 <h2>🔞 Режим 18+</h2>
                 <div class="toggle-row">
-                    <span style="font-weight: 600;">Включить романтику</span>
+                    <span style="font-weight: 800;">Активировать режим</span>
                     <label class="switch">
                         <input type="checkbox" id="nsfw_mode" onchange="toggleNSFW()">
                         <span class="slider"></span>
                     </label>
                 </div>
                 <div id="nsfw_options" style="display:none; margin-top:20px;">
-                    <div class="btn-stack" id="passion_lvl">
-                        <div class="btn-choice" onclick="setChoice('passion_lvl', 1, this)">Легкий</div>
-                        <div class="btn-choice" onclick="setChoice('passion_lvl', 2, this)">Жаркий</div>
-                        <div class="btn-choice" onclick="handleMaxi(this)" style="color: var(--accent-pink);">Макси 🔥</div>
+                    <div class="choice-group" id="passion_lvl">
+                        <div class="choice-btn" onclick="setChoice('passion_lvl', 1, this)">Легкий</div>
+                        <div class="choice-btn" onclick="setChoice('passion_lvl', 2, this)">Жаркий</div>
+                        <div class="choice-btn" onclick="handleMaxi(this)" style="border-color: #f00; color: #f00;">Макси 🔥</div>
                     </div>
                 </div>
-                <div class="hint" id="hint_passion_lvl">...</div>
+                <div class="hint-block" id="hint_nsfw">...</div>
             </div>
 
-            <div class="card" style="margin-bottom: 10px;">
-                <h2>🌍 Сеттинг</h2>
-                <textarea id="setting" rows="2" placeholder="Напр: Летний сад под дождем..."></textarea>
+            <div class="panel">
+                <h2>🌍 Окружение</h2>
+                <textarea id="setting" rows="2" placeholder="Напр: Заброшенный особняк, густой туман..."></textarea>
             </div>
 
-            <button class="save-btn" onclick="save()">Сохранить настройки</button>
+            <button class="submit-progress" onclick="save()">💾 Применить настройки</button>
         </div>
 
-        <!-- ТАБ: МАГАЗИН -->
+        <!-- SHOP -->
         <div id="tab-shop" style="display:none">
-            <div class="card">
-                <h2 style="text-align: center;">💎 Алмазная Лавка</h2>
-                <div class="shop-item">
+            <div class="panel">
+                <h2 style="text-align: center;">💎 Пополнение Hearts</h2>
+                <div class="shop-row">
                     <div>
-                        <b>Горсть Алмазов (100)</b>
-                        <span>Набор для новых глав</span>
+                        <b>Набор (100 Hearts)</b><br>
+                        <span>Дополнительные ответы</span>
                     </div>
                     <button class="buy-btn" onclick="buy(100)">50 ⭐</button>
                 </div>
-                <div class="shop-item">
+                <div class="shop-row">
                     <div>
-                        <b>Мешок Алмазов (500)</b>
-                        <span>Для долгих историй</span>
+                        <b>Пакет (500 Hearts)</b><br>
+                        <span>Для длинных сессий</span>
                     </div>
                     <button class="buy-btn" onclick="buy(500)">200 ⭐</button>
                 </div>
-                <div class="shop-item">
+                <div class="shop-row">
                     <div>
-                        <b>Премиум-подписка</b>
+                        <b style="color: var(--accent-yellow)">Премиум-подписка</b><br>
                         <span>Доступ ко всем функциям</span>
                     </div>
                     <button class="buy-btn" onclick="buy('vip')">ОТ 150 ⭐</button>
                 </div>
             </div>
-            <p style="text-align: center; font-size: 11px; color: var(--text-dim);">Твоя история. Твой выбор.</p>
+            <p style="text-align: center; font-size: 11px; color: var(--text-dim); font-weight: 800;">ТВОЙ ВЫБОР. ТВОЯ ИСТОРИЯ.</p>
         </div>
     </div>
 
-    <!-- НАВИГАЦИЯ -->
-    <div class="nav">
-        <div class="nav-item active" onclick="switchTab('settings', this)">
-            <i>⚙️</i> Настройки
-        </div>
-        <div class="nav-item" onclick="switchTab('shop', this)">
-            <i>🛍️</i> Магазин
-        </div>
+    <div class="navbar">
+        <a href="#" class="nav-link active" onclick="switchTab('settings', this)">
+            <i>⚙️</i>Настройки
+        </a>
+        <a href="#" class="nav-link" onclick="switchTab('shop', this)">
+            <i>🛍️</i>Магазин
+        </a>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.headerColor = '#2a1b4d';
+        tg.headerColor = '#050505';
 
         let choices = { msg_len: 2, passion_lvl: 1 };
         let isPrem = false;
 
         const hints = {
-            msg_len: { 1: "Быстрый темп: только диалоги и действия.", 2: "Художественное описание чувств и атмосферы.", 3: "Длинные ответы в стиле настоящей книги." },
-            sfw: "Фокус на сюжете и платонической нежности без эротики.",
-            passion_lvl: { 1: "Нежный флирт и химия без детальных описаний.", 2: "Откровенные сцены и жаркие признания.", 3: "Максимальная страсть, грубость и дикое желание (Премиум)." }
+            msg_len: { 1: "Быстрый темп: только диалоги и действия.", 2: "Художественное описание чувств и атмосферы.", 3: "Длинные ответы в стиле настоящей книги со всеми деталями." },
+            nsfw_off: "Сюжетный фокус и химия персонажей. Без откровенного контента.",
+            passion: { 1: "Чувственный флирт и химия без детальных описаний актов.", 2: "Откровенные сцены и жаркие признания во всех красках.", 3: "Максимальная страсть, грубость и дикое желание. Только для владельцев Премиума." }
         };
 
         function load() {
@@ -289,8 +294,8 @@
             isPrem = p.get('prem') === '1';
 
             document.getElementById('msgs_val').innerText = isPrem ? "∞" : (total + daily);
-            document.getElementById('coins_val').innerText = (p.get('coins') || '0') + ' 💎';
-            document.getElementById('rank_badge').innerText = isPrem ? "Премиум-доступ" : "Обычный профиль";
+            document.getElementById('coins_val').innerText = p.get('coins') || '0';
+            document.getElementById('user_rank').innerText = isPrem ? "Премиум-доступ" : "Обычный профиль";
 
             if (p.get('name')) document.getElementById('user_name').value = p.get('name');
             if (p.get('role')) document.getElementById('user_role').value = p.get('role');
@@ -305,15 +310,18 @@
         function sync(key, val) {
             val = parseInt(val); choices[key] = val;
             const container = document.getElementById(key);
-            container.querySelectorAll('.btn-choice').forEach((b, i) => b.classList.toggle('active', i + 1 === val));
-            if (key === 'passion_lvl') document.getElementById('hint_passion_lvl').innerText = hints.passion_lvl[val];
-            else document.getElementById('hint_' + key).innerText = hints[key][val];
+            container.querySelectorAll('.choice-btn').forEach((b, i) => b.classList.toggle('active', i + 1 === val));
+            
+            if (key === 'msg_len') document.getElementById('hint_msg_len').innerText = hints.msg_len[val];
+            if (key === 'passion_lvl' && document.getElementById('nsfw_mode').checked) {
+                document.getElementById('hint_nsfw').innerText = hints.passion[val];
+            }
         }
 
         function setChoice(key, val, el) { sync(key, val); tg.HapticFeedback.impactOccurred('medium'); }
 
         function handleMaxi(el) {
-            document.getElementById('hint_passion_lvl').innerText = hints.passion_lvl[3];
+            document.getElementById('hint_nsfw').innerText = hints.passion[3];
             if (!isPrem) {
                 tg.showPopup({ title: 'Премиум-выбор', message: 'Режим "Макси" доступен только подписчикам.', buttons: [{type: 'ok', text: 'Понятно'}] });
             } else { setChoice('passion_lvl', 3, el); }
@@ -322,13 +330,13 @@
         function toggleNSFW() {
             const on = document.getElementById('nsfw_mode').checked;
             document.getElementById('nsfw_options').style.display = on ? 'block' : 'none';
-            document.getElementById('hint_passion_lvl').innerText = on ? hints.passion_lvl[choices.passion_lvl] : hints.sfw;
+            document.getElementById('hint_nsfw').innerText = on ? hints.passion[choices.passion_lvl] : hints.nsfw_off;
         }
 
         function switchTab(tab, el) {
             document.getElementById('tab-settings').style.display = tab === 'settings' ? 'block' : 'none';
             document.getElementById('tab-shop').style.display = tab === 'shop' ? 'block' : 'none';
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
             tg.HapticFeedback.selectionChanged();
         }
@@ -348,14 +356,14 @@
         function buy(item) { tg.sendData(JSON.stringify({action: 'buy', item: item})); }
 
         function initParticles() {
-            const container = document.getElementById('dust');
-            for(let i=0; i<30; i++) {
+            const container = document.getElementById('dust-layer');
+            for(let i=0; i<25; i++) {
                 const p = document.createElement('div');
-                p.className = 'particle';
-                const size = Math.random() * 3 + 1 + 'px';
+                p.className = 'dust';
+                const size = Math.random() * 2 + 1 + 'px';
                 p.style.width = p.style.height = size;
                 p.style.left = Math.random() * 100 + '%';
-                p.style.setProperty('--speed', Math.random() * 15 + 10 + 's');
+                p.style.setProperty('--s', Math.random() * 15 + 10 + 's');
                 p.style.animationDelay = Math.random() * 5 + 's';
                 container.appendChild(p);
             }
