@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aimi AI — Космические Настройки</title>
+    <title>Aimi AI — Настройки</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -22,6 +22,7 @@
             color: var(--text-main);
             margin: 0; padding: 0;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* КОСМИЧЕСКИЙ ФОН */
@@ -67,22 +68,23 @@
             font-size: 11px; font-weight: 800; color: var(--accent-yellow); text-transform: uppercase;
         }
         .info-icon {
-            width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--accent-blue);
-            color: var(--accent-blue); font-size: 12px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-weight: bold; font-style: italic;
+            width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--accent-blue);
+            color: var(--accent-blue); font-size: 14px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-weight: bold; font-style: italic; background: rgba(0, 229, 255, 0.1);
         }
 
         /* МОДАЛЬНОЕ ОКНО */
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
         }
         .modal-content {
-            background: var(--glass); backdrop-filter: blur(30px);
+            background: rgba(15, 20, 30, 0.95); backdrop-filter: blur(30px);
             border: 1px solid var(--accent-blue); padding: 25px;
             width: 80%; margin: 20% auto; border-radius: 20px; position: relative;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.2);
         }
-        .close-modal { position: absolute; right: 15px; top: 10px; font-size: 20px; color: var(--accent-yellow); cursor: pointer; }
+        .close-modal { position: absolute; right: 15px; top: 10px; font-size: 24px; color: var(--accent-yellow); cursor: pointer; }
 
         /* DASHBOARD */
         .dash { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
@@ -95,24 +97,23 @@
         .dash-card small { display: block; font-size: 10px; color: var(--accent-blue); text-transform: uppercase; font-weight: 800; margin-bottom: 5px; }
         .dash-card b { font-size: 22px; font-weight: 900; }
 
-        /* PANELS (With tails) */
+        /* PANELS (Classic Tails) */
         .panel {
             background: var(--glass); backdrop-filter: blur(30px);
             border: 1px solid var(--glass-border); border-radius: 20px;
-            padding: 20px; margin-bottom: 25px;
+            padding: 20px; margin-bottom: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             position: relative;
         }
         .panel::after {
-            content: ''; position: absolute; left: 25px; bottom: -10px;
-            width: 0; height: 0;
-            border-left: 10px solid transparent; border-right: 10px solid transparent;
-            border-top: 10px solid var(--glass-border);
+            content: ''; position: absolute; left: 35px; bottom: -12px;
+            border-left: 12px solid transparent; border-right: 12px solid transparent;
+            border-top: 12px solid var(--glass-border);
         }
         h2 { font-size: 14px; color: var(--accent-yellow); margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
 
-        input, textarea, select {
-            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);
+        input, textarea {
+            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border);
             border-radius: 10px; padding: 12px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box;
         }
 
@@ -134,9 +135,24 @@
             font-size: 12px; line-height: 1.4; color: var(--text-dim);
         }
 
-        /* SHOP SPECIFICS */
+        /* TOGGLE 18+ (Slider) */
+        .switch { position: relative; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: #27272a; transition: .4s; border-radius: 100px;
+            border: 1px solid var(--glass-border);
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px;
+            background: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background: #d9534f; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* SHOP ITEMS */
         .shop-row {
-            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border);
             border-radius: 12px; padding: 15px; margin-bottom: 12px;
             display: flex; justify-content: space-between; align-items: center;
         }
@@ -145,32 +161,38 @@
         .buy-btn {
             background: var(--accent-yellow); color: #000; border: none;
             padding: 10px 18px; border-radius: 6px; font-weight: 900; font-size: 12px;
+            cursor: pointer;
         }
 
-        .vip-selector {
-            width: 100%; margin-top: 10px; border-radius: 8px; padding: 12px;
-            background: rgba(0,0,0,0.5); border: 1px solid var(--accent-yellow);
-            color: var(--accent-yellow); font-weight: bold;
+        .vip-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .vip-item {
+            background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 10px; padding: 12px; display: flex; justify-content: space-between;
+            align-items: center; cursor: pointer; transition: 0.2s;
         }
+        .vip-item:active { background: rgba(255,215,0,0.15); }
 
         /* NAVBAR */
         .navbar {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(0,0,0,0.9); border-top: 1px solid var(--glass-border);
-            display: flex; z-index: 100; backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.95); border-top: 1px solid var(--glass-border);
+            display: flex; z-index: 100; backdrop-filter: blur(15px);
         }
         .nav-link {
-            flex: 1; text-align: center; padding: 18px 0;
-            color: #555; text-decoration: none; font-size: 11px; font-weight: 800; text-transform: uppercase;
+            flex: 1; text-align: center; padding: 12px 0;
+            color: #555; text-decoration: none; font-size: 10px; font-weight: 800; text-transform: uppercase;
         }
         .nav-link.active { color: var(--accent-yellow); background: rgba(255, 215, 0, 0.05); }
+        .nav-link span { display: block; font-size: 20px; margin-bottom: 2px; }
 
         .submit-btn {
             background: linear-gradient(90deg, var(--accent-blue), var(--accent-yellow));
             color: #000; width: 100%; padding: 20px; border-radius: 14px;
             border: none; font-weight: 900; font-size: 15px; text-transform: uppercase;
             box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2); margin-top: 10px;
+            transition: transform 0.1s;
         }
+        .submit-btn:active { transform: scale(0.96); }
 
         .heart-icon {
             display: inline-block; width: 18px; height: 18px;
@@ -185,11 +207,11 @@
     <div id="infoModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="toggleModal(false)">&times;</span>
-            <h2 style="margin-top:0">Бесплатный доступ</h2>
+            <h2 style="margin-top:0; color: var(--accent-yellow);">Бесплатный доступ</h2>
             <ul style="font-size:14px; line-height:1.8; color: var(--text-dim); padding-left:20px;">
                 <li>30 ежедневных сообщений</li>
-                <li>120 приветственных бонусов</li>
-                <li>Режимы: SFW и Легкий NSFW</li>
+                <li>120 приветственных бонусных сообщений</li>
+                <li>Режимы: Обычный и Легкий 18+</li>
                 <li>1 слот для сохранения</li>
             </ul>
         </div>
@@ -218,11 +240,11 @@
         <div id="tab-settings">
             <div class="panel">
                 <h2>🖋️ Твой профиль</h2>
-                <label style="font-size:11px; color:var(--text-dim)">Твое имя</label>
-                <input type="text" id="user_name" placeholder="Напр: Теневой охотник">
+                <label style="font-size:11px; color:var(--text-dim)">Как персонаж будет тебя называть?</label>
+                <input type="text" id="user_name" placeholder="Пример: Мария">
                 <div style="height:15px"></div>
-                <label style="font-size:11px; color:var(--text-dim)">Твоя роль</label>
-                <input type="text" id="user_role" placeholder="Напр: Наставник">
+                <label style="font-size:11px; color:var(--text-dim)">Твоя роль в истории</label>
+                <input type="text" id="user_role" placeholder="Напр: Телохранитель">
             </div>
 
             <div class="panel">
@@ -238,8 +260,11 @@
             <div class="panel">
                 <h2>🔞 Режим 18+</h2>
                 <div style="display:flex; justify-content:space-between; align-items:center">
-                    <span style="font-weight:800; font-size:14px;">Активировать</span>
-                    <input type="checkbox" id="nsfw_mode" onchange="toggleNSFW()" style="width:20px; height:20px">
+                    <span style="font-weight:800; font-size:14px;">Активировать режим</span>
+                    <label class="switch">
+                        <input type="checkbox" id="nsfw_mode" onchange="toggleNSFW()">
+                        <span class="slider"></span>
+                    </label>
                 </div>
                 <div id="nsfw_options" style="display:none; margin-top:20px;">
                     <div class="choice-group" id="passion_lvl">
@@ -253,10 +278,10 @@
 
             <div class="panel">
                 <h2>🌍 Окружение</h2>
-                <textarea id="setting" rows="2" placeholder="Опиши обстановку..."></textarea>
+                <textarea id="setting" rows="2" placeholder="Опиши, где вы сейчас находитесь..."></textarea>
             </div>
 
-            <button class="submit-btn" onclick="save()">💾 Применить</button>
+            <button class="submit-btn" onclick="save()">💾 Применить настройки</button>
         </div>
 
         <div id="tab-shop" style="display:none">
@@ -270,29 +295,42 @@
                 </div>
                 
                 <div class="shop-row">
-                    <div><b>Слот сохранения</b><br><span>299 ₽ (300 Hearts)</span></div>
-                    <button class="buy-btn" onclick="buy('slot')">299 ₽</button>
+                    <div><b>Слот сохранения</b><br><span>99 ₽ (100 Hearts)</span></div>
+                    <button class="buy-btn" onclick="buy('slot')">99 ₽</button>
                 </div>
 
-                <div class="shop-row" style="flex-direction:column; align-items:stretch; gap:10px; border-color:var(--accent-yellow)">
-                    <div style="display:flex; justify-content:space-between; align-items:center">
-                        <b style="color:var(--accent-yellow)">Премиум-подписка (VIP)</b>
+                <div style="margin-top:20px">
+                    <h2 style="text-align:center">👑 Премиум VIP</h2>
+                    <div class="vip-list">
+                        <div class="vip-item" onclick="buyVip(150)">
+                            <span>Неделя</span>
+                            <b>299 ₽</b>
+                        </div>
+                        <div class="vip-item" onclick="buyVip(400)">
+                            <span>Месяц</span>
+                            <b>799 ₽</b>
+                        </div>
+                        <div class="vip-item" onclick="buyVip(1000)">
+                            <span>Полгода</span>
+                            <b>1999 ₽</b>
+                        </div>
+                        <div class="vip-item" onclick="buyVip(1500)" style="border-color: var(--accent-yellow)">
+                            <span style="color: var(--accent-yellow)">Год (Выгодно!)</span>
+                            <b>2999 ₽</b>
+                        </div>
                     </div>
-                    <select id="vip-period" class="vip-selector">
-                        <option value="99">Неделя — 199 ₽ (198 Hearts)</option>
-                        <option value="299">Месяц — 599 ₽ (598 Hearts)</option>
-                        <option value="799">Полгода — 1599 ₽ (1598 Hearts)</option>
-                        <option value="1299">Год — 2599 ₽ (2598 Hearts)</option>
-                    </select>
-                    <button class="buy-btn" style="width:100%" onclick="buyVip()">Приобрести VIP</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="navbar">
-        <a href="#" class="nav-link active" onclick="switchTab('settings', this)">Настройки</a>
-        <a href="#" class="nav-link" onclick="switchTab('shop', this)">Магазин</a>
+        <a href="#" class="nav-link active" onclick="switchTab('settings', this)">
+            <span>⚙️</span>Настройки
+        </a>
+        <a href="#" class="nav-link" onclick="switchTab('shop', this)">
+            <span>🛍️</span>Магазин
+        </a>
     </div>
 
     <script>
@@ -304,9 +342,9 @@
         let isPrem = false;
 
         const hints = {
-            msg_len: { 1: "Быстрый темп: только диалоги и действия.", 2: "Художественное описание чувств и атмосферы.", 3: "Длинные ответы в стиле настоящей книги." },
-            nsfw_off: "Сюжетный фокус и химия. Без откровенного контента.",
-            passion: { 1: "Нежный флирт без детальных описаний.", 2: "Откровенные сцены и жаркие признания.", 3: "Максимальная страсть и дикое желание (Премиум)." }
+            msg_len: { 1: "Минимум воды, акцент на диалогах.", 2: "Художественное описание чувств и атмосферы.", 3: "Длинные ответы в стиле настоящей книги." },
+            nsfw_off: "Обычный режим: химия и сюжет без откровенного контента.",
+            passion: { 1: "Легкий режим: нежный флирт без детальных описаний.", 2: "Жаркий режим: откровенные сцены и признания.", 3: "Максимальный режим: страсть без ограничений (Премиум)." }
         };
 
         function toggleModal(show) { document.getElementById('infoModal').style.display = show ? 'block' : 'none'; }
@@ -319,7 +357,7 @@
 
             document.getElementById('msgs_val').innerText = isPrem ? "∞" : (total + daily);
             document.getElementById('coins_val').innerText = p.get('coins') || '0';
-            document.getElementById('user_rank').innerText = isPrem ? "Премиум-доступ" : "Обычный профиль";
+            document.getElementById('user_rank').innerText = isPrem ? "Премиум VIP" : "Обычный профиль";
 
             if (p.get('name')) document.getElementById('user_name').value = p.get('name');
             if (p.get('role')) document.getElementById('user_role').value = p.get('role');
@@ -347,7 +385,7 @@
         function handleMaxi(el) {
             document.getElementById('hint_nsfw').innerText = hints.passion[3];
             if (!isPrem) {
-                tg.showPopup({ title: 'Премиум', message: 'Режим "Макси" доступен только VIP.', buttons: [{type: 'ok', text: 'Понятно'}] });
+                tg.showPopup({ title: 'Премиум', message: 'Режим "Макси" доступен только для VIP-подписчиков.', buttons: [{type: 'ok', text: 'Понятно'}] });
             } else { setChoice('passion_lvl', 3, el); }
         }
 
@@ -366,7 +404,8 @@
         }
 
         function save() {
-            tg.sendData(JSON.stringify({
+            tg.HapticFeedback.notificationOccurred('success');
+            const data = {
                 action: 'save_profile',
                 user_name: document.getElementById('user_name').value,
                 user_role: document.getElementById('user_role').value,
@@ -374,13 +413,14 @@
                 msg_len: choices.msg_len,
                 is_nsfw: document.getElementById('nsfw_mode').checked,
                 passion_lvl: choices.passion_lvl
-            }));
+            };
+            tg.sendData(JSON.stringify(data));
+            tg.close();
         }
 
         function buy(item) { tg.sendData(JSON.stringify({action: 'buy', item: item})); }
-        function buyVip() {
-            const price = document.getElementById('vip-period').value;
-            tg.sendData(JSON.stringify({action: 'buy', item: 'vip', price: price}));
+        function buyVip(priceInStars) {
+            tg.sendData(JSON.stringify({action: 'buy', item: 'vip', stars: priceInStars}));
         }
 
         function initStars() {
