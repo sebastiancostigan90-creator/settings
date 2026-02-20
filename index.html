@@ -3,231 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aimi AI</title>
+    <title>Aimi AI — Личный Кабинет</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0f111a;
-            --card-bg: rgba(26, 29, 41, 0.95);
-            --gold: #d4af37;
-            --blue: #4dabf7;
-            --text: #e0e0e0;
-            --border: rgba(212, 175, 55, 0.15);
+            --bg-deep: #050608;
+            --glass: rgba(20, 24, 35, 0.8);
+            --accent-yellow: #FFD700;
+            --accent-blue: #00E5FF;
+            --text-main: #FFFFFF;
+            --text-dim: #B0BCCF;
+            --border-glow: rgba(0, 229, 255, 0.3);
+            --gold-glow: rgba(255, 215, 0, 0.4);
         }
 
         body {
             font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text);
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             margin: 0; padding: 0;
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* АНИМИРОВАННЫЙ ФОН */
-        #bg-canvas {
+        /* МАГИЧЕСКИЙ ФОН */
+        .bg-wrapper {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none;
+            z-index: 0; background: radial-gradient(circle at 50% 50%, #101625 0%, #050608 100%);
         }
-        .particle {
-            position: absolute; border-radius: 50%;
-            animation: float infinite ease-in-out;
-            opacity: 0.4;
+        .star {
+            position: absolute; background: white; border-radius: 50%;
+            opacity: 0.5; animation: twinkle var(--d) infinite ease-in-out;
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0); }
-            50% { transform: translateY(-40px) translateX(20px); }
-        }
+        @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.2); } }
 
-        .container { position: relative; z-index: 1; padding: 15px; padding-bottom: 100px; }
+        .container { position: relative; z-index: 1; padding: 15px; padding-bottom: 110px; }
 
+        /* HEADER */
         .header { text-align: center; margin: 15px 0; }
         .logo { 
-            font-size: 30px; font-weight: 800; 
-            background: linear-gradient(135deg, var(--gold), var(--blue));
+            font-size: 32px; font-weight: 900; 
+            background: linear-gradient(135deg, var(--accent-yellow) 20%, var(--accent-blue));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
+            letter-spacing: 1px; filter: drop-shadow(0 0 10px rgba(0,229,255,0.2));
         }
-        .status-line { font-size: 10px; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; opacity: 0.8; }
+        .motto { font-size: 11px; color: var(--accent-blue); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; opacity: 0.8; }
 
-        /* БАЛАНС */
-        .stats {
-            display: flex; justify-content: space-around;
-            background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-            border-radius: 50px; padding: 10px; margin-bottom: 20px;
+        /* STATS BAR */
+        .stats-bar {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;
         }
-        .stat-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
-        .stat-item i { font-size: 16px; }
+        .stat-card {
+            background: var(--glass); backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glow); border-radius: 14px;
+            padding: 10px; text-align: center;
+        }
+        .stat-card b { display: block; font-size: 18px; color: #fff; }
+        .stat-card span { font-size: 9px; color: var(--accent-yellow); text-transform: uppercase; }
 
-        /* КАРТОЧКИ (СТИЛЬ КР) */
+        /* CARDS (RC + Charmy Mix) */
         .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--gold);
-            border-radius: 12px; padding: 18px; margin-bottom: 20px;
-            position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: var(--glass); backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glow); border-radius: 20px;
+            padding: 20px; margin-bottom: 20px; position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
-        .card::after {
-            content: ''; position: absolute; left: 20px; bottom: -8px;
-            border-left: 8px solid transparent; border-right: 8px solid transparent;
-            border-top: 8px solid var(--card-bg);
+        .card::after { /* Хвостик диалога КР */
+            content: ''; position: absolute; left: 30px; bottom: -10px;
+            border-left: 12px solid transparent; border-right: 12px solid transparent;
+            border-top: 12px solid rgba(20, 24, 35, 0.8);
         }
 
-        h2 { font-size: 13px; color: var(--gold); text-transform: uppercase; margin: 0 0 12px 0; letter-spacing: 1px; }
-        label { font-size: 11px; color: var(--blue); display: block; margin-bottom: 6px; }
+        h2 { font-size: 14px; color: var(--accent-yellow); text-transform: uppercase; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px; }
 
         input, textarea {
-            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px; padding: 12px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box;
-            margin-bottom: 10px;
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 12px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box;
         }
+        input:focus { border-color: var(--accent-blue); box-shadow: 0 0 10px var(--border-glow); }
 
-        /* КНОПКИ ВЫБОРА */
-        .btn-stack { display: flex; flex-direction: column; gap: 8px; }
+        /* BUTTON GROUPS */
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
         .btn-choice {
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px; padding: 12px; color: #fff; text-align: center;
-            font-size: 14px; cursor: pointer; transition: 0.2s;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 12px 5px; color: #fff; text-align: center;
+            font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.3s;
         }
         .btn-choice.active {
-            border-color: var(--gold); background: rgba(212, 175, 55, 0.1);
-            color: var(--gold); font-weight: 600;
+            background: var(--accent-yellow); color: #000; border-color: var(--accent-yellow);
+            box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        .hint { font-size: 11px; color: #888; margin-top: 6px; line-height: 1.3; }
+        .hint-box {
+            background: rgba(0, 229, 255, 0.05); border-radius: 10px;
+            padding: 10px; margin-top: 12px; font-size: 11px; color: var(--text-dim);
+            line-height: 1.4; border-left: 2px solid var(--accent-blue);
+        }
 
-        /* NSFW TOGGLE */
-        .flex-row { display: flex; justify-content: space-between; align-items: center; }
-        .switch { position: relative; width: 40px; height: 20px; }
+        /* TOGGLE */
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; }
+        .switch { position: relative; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background: #333; transition: .3s; border-radius: 20px;
+            background: #333; transition: .4s; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
         }
         .slider:before {
-            position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px;
-            background: #fff; transition: .3s; border-radius: 50%;
+            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 2px;
+            background: #fff; transition: .4s; border-radius: 50%;
         }
-        input:checked + .slider { background: #d9534f; }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider { background: linear-gradient(90deg, #FF5F6D, #FFC371); }
+        input:checked + .slider:before { transform: translateX(22px); }
 
-        /* МАГАЗИН */
-        .shop-row {
+        /* SHOP */
+        .shop-item {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 15px; padding: 15px; margin-bottom: 12px;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
+        .shop-info b { color: var(--accent-yellow); font-size: 14px; display: block; }
+        .shop-info i { font-size: 11px; color: var(--text-dim); font-style: normal; }
         .buy-btn {
-            background: var(--gold); color: #000; border: none;
-            padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 12px;
+            background: var(--accent-blue); color: #000; border: none;
+            padding: 8px 14px; border-radius: 8px; font-weight: 800; font-size: 12px;
         }
 
-        /* НАВИГАЦИЯ */
+        /* NAVIGATION */
         .nav {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: #090a0f; display: flex; border-top: 1px solid var(--border); z-index: 100;
+            background: rgba(5, 6, 8, 0.95); backdrop-filter: blur(20px);
+            display: flex; border-top: 1px solid var(--border-glow); z-index: 100;
         }
         .nav-item {
-            flex: 1; text-align: center; color: #555; padding: 12px 0;
-            font-size: 10px; text-decoration: none; text-transform: uppercase;
+            flex: 1; text-align: center; color: #555; padding: 15px 0;
+            font-size: 10px; text-decoration: none; text-transform: uppercase; font-weight: 700;
         }
-        .nav-item.active { color: var(--gold); background: rgba(212, 175, 55, 0.05); }
+        .nav-item.active { color: var(--accent-yellow); background: rgba(255, 215, 0, 0.05); }
 
         .save-btn {
-            background: var(--blue); color: #fff; width: 100%; padding: 16px;
-            border-radius: 12px; border: none; font-weight: bold; font-size: 15px;
-            margin-top: 10px; box-shadow: 0 4px 15px rgba(77, 171, 247, 0.2);
+            background: linear-gradient(90deg, #00E5FF, #00A3FF); color: #000;
+            width: 100%; padding: 18px; border-radius: 15px; border: none;
+            font-weight: 900; font-size: 15px; text-transform: uppercase;
+            box-shadow: 0 4px 20px rgba(0, 229, 255, 0.4); margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div id="bg-canvas"></div>
+    <div class="bg-wrapper" id="stars"></div>
 
     <div class="container">
         <div class="header">
             <div class="logo">Aimi AI</div>
-            <div class="status-line" id="rank">Путешественник</div>
+            <div class="motto">Твоя история. Твой выбор.</div>
         </div>
 
-        <div class="stats">
-            <div class="stat-item"><span style="color: var(--blue)">⚡</span> <span id="msgs_left">...</span></div>
-            <div class="stat-item"><span style="color: var(--gold)">💎</span> <span id="coins">0</span></div>
+        <div class="stats-bar">
+            <div class="stat-card">
+                <span id="rank_display" style="font-size: 9px; color: var(--accent-blue);">PLAYER</span>
+                <b id="msgs_display">...</b>
+                <span>Заряды (Энергия)</span>
+            </div>
+            <div class="stat-card">
+                <span style="font-size: 9px; color: var(--accent-blue);">БАЛАНС</span>
+                <b id="coins_display">0</b>
+                <span>Алмазы (💎)</span>
+            </div>
         </div>
 
-        <!-- ВКЛАДКА: НАСТРОЙКИ -->
+        <!-- НАСТРОЙКИ -->
         <div id="settings-tab" class="tab-content">
             <div class="card">
-                <h2>Главный Герой</h2>
+                <h2>👤 Профиль Героя</h2>
                 <label>Ваше Имя</label>
-                <input type="text" id="user_name" placeholder="Введите...">
-                <label>Ваша Роль</label>
-                <input type="text" id="user_role" placeholder="Напр: Студентка...">
-            </div>
-
-            <div class="card">
-                <h2>Повествование</h2>
-                <div class="btn-stack" id="msg_len">
-                    <div class="btn-choice" onclick="setChoice('msg_len', 1, this)">Коротко</div>
-                    <div class="btn-choice" onclick="setChoice('msg_len', 2, this)">Средне</div>
-                    <div class="btn-choice" onclick="setChoice('msg_len', 3, this)">Книжно</div>
+                <input type="text" id="user_name" placeholder="Введите имя...">
+                <div style="margin-top: 15px;">
+                    <label>Ваша Роль</label>
+                    <input type="text" id="user_role" placeholder="Напр: Детектив, Студентка...">
                 </div>
-                <p class="hint" id="hint_msg_len">Влияет на детальность ответов персонажа.</p>
             </div>
 
             <div class="card">
-                <h2>Сюжет</h2>
-                <div class="btn-stack" id="predictability">
-                    <div class="btn-choice" onclick="setChoice('predictability', 1, this)">Логично</div>
-                    <div class="btn-choice" onclick="setChoice('predictability', 2, this)">Баланс</div>
-                    <div class="btn-choice" onclick="setChoice('predictability', 3, this)">Безумно</div>
+                <h2>📖 Повествование</h2>
+                <div class="btn-grid" id="msg_len">
+                    <div class="btn-choice" onclick="setChoice('msg_len', 1, this)">Кратко</div>
+                    <div class="btn-choice" onclick="setChoice('msg_len', 2, this)">Баланс</div>
+                    <div class="btn-choice" onclick="setChoice('msg_len', 3, this)">Роман</div>
                 </div>
-                <p class="hint" id="hint_predictability">Частота неожиданных поворотов в истории.</p>
+                <div class="hint-box" id="hint_msg_len">...</div>
             </div>
 
             <div class="card">
-                <h2>Атмосфера</h2>
-                <div class="flex-row">
-                    <span style="font-size: 14px;">Режим 18+</span>
+                <h2>🔥 Атмосфера 18+</h2>
+                <div class="toggle-row">
+                    <span>Режим Романтики</span>
                     <label class="switch">
                         <input type="checkbox" id="nsfw_mode" onchange="toggleNSFW()">
                         <span class="slider"></span>
                     </label>
                 </div>
-                <div id="passion_block" style="display: none; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
-                    <div class="btn-stack" id="passion_lvl">
-                        <div class="btn-choice" onclick="setChoice('passion_lvl', 1, this)">Нежно</div>
-                        <div class="btn-choice" onclick="setChoice('passion_lvl', 2, this)">Горячо</div>
-                        <div class="btn-choice" style="color: #ff4d4d" onclick="handleMaxi(this)">Макси 🔥</div>
+                <div id="nsfw_options" style="display:none; margin-top:15px;">
+                    <div class="btn-grid" id="passion_lvl">
+                        <div class="btn-choice" onclick="setChoice('passion_lvl', 1, this)">Легкий</div>
+                        <div class="btn-choice" onclick="setChoice('passion_lvl', 2, this)">Жаркий</div>
+                        <div class="btn-choice" onclick="handleMaxi(this)" style="border-color: #ff4d4d;">Макси 🔥</div>
                     </div>
-                    <p class="hint" id="hint_passion_lvl">Градус откровенности ваших сцен.</p>
                 </div>
+                <div class="hint-box" id="hint_passion_lvl">Определяет уровень откровенности сцен.</div>
             </div>
 
             <div class="card">
-                <h2>Окружение</h2>
-                <label>Место действия</label>
-                <textarea id="setting" rows="2" placeholder="Где вы сейчас находитесь?"></textarea>
+                <h2>🗺️ Окружение</h2>
+                <textarea id="setting" rows="2" placeholder="Опишите, где вы сейчас..."></textarea>
             </div>
 
-            <button class="save-btn" onclick="save()">💾 Сохранить и продолжить</button>
+            <button class="save-btn" onclick="save()">Сохранить настройки</button>
         </div>
 
-        <!-- ВКЛАДКА: МАГАЗИН -->
+        <!-- МАГАЗИН -->
         <div id="shop-tab" class="tab-content" style="display:none">
             <div class="card">
-                <h2>Алмазная Лавка</h2>
-                <div class="shop-row">
-                    <span>Шкатулка (100 💎)</span>
+                <h2 style="justify-content: center;">💎 Алмазная Лавка</h2>
+                <div class="shop-item">
+                    <div class="shop-info">
+                        <b>Горсть Алмазов (100)</b>
+                        <i>+100 дополнительных сообщений</i>
+                    </div>
                     <button class="buy-btn" onclick="buy(100)">50 ⭐</button>
                 </div>
-                <div class="shop-row">
-                    <span>Сундук (500 💎)</span>
+                <div class="shop-item">
+                    <div class="shop-info">
+                        <b>Мешок Алмазов (500)</b>
+                        <i>Для самых длинных историй</i>
+                    </div>
                     <button class="buy-btn" onclick="buy(500)">200 ⭐</button>
                 </div>
-                <div class="shop-row" style="border: 1px solid var(--gold); margin-top: 10px; border-radius: 8px;">
-                    <span style="color: var(--gold)">Королевский VIP</span>
-                    <button class="buy-btn" onclick="buy('vip')">500 ⭐</button>
+                <div class="shop-item" style="border-color: var(--accent-yellow);">
+                    <div class="shop-info">
+                        <b style="color: var(--accent-yellow)">👑 Вечный VIP</b>
+                        <i>Безлимит и все слоты навсегда</i>
+                    </div>
+                    <button class="buy-btn" style="background: var(--accent-yellow)" onclick="buy('vip')">500 ⭐</button>
                 </div>
             </div>
-            <p style="text-align:center; font-size:11px; opacity:0.5">Твоя история. Твой выбор.</p>
         </div>
     </div>
 
@@ -239,15 +256,14 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.headerColor = '#0f111a';
+        tg.headerColor = '#050608';
 
-        let choices = { msg_len: 2, predictability: 2, passion_lvl: 1 };
+        let choices = { msg_len: 2, passion_lvl: 1 };
         let isPrem = false;
 
         const hints = {
-            msg_len: { 1: "Короткие, емкие диалоги.", 2: "Баланс речи и описаний.", 3: "Длинные литературные абзацы." },
-            predictability: { 1: "Персонаж следует строгой логике.", 2: "Классические сюжетные приемы.", 3: "Абсолютная непредсказуемость." },
-            passion_lvl: { 1: "Чувства, взгляды, легкие касания.", 2: "Детальное описание близости.", 3: "Максимальная страсть без границ." }
+            msg_len: { 1: "Только суть и диалоги. Быстрый темп.", 2: "Художественное описание действий и чувств.", 3: "Глубокое погружение, длинные литературные ответы." },
+            passion_lvl: { 1: "Нежные чувства, взгляды и легкие касания.", 2: "Горячие сцены с детальным описанием близости.", 3: "Максимальная страсть, грубость и смелые эксперименты (VIP)." }
         };
 
         function load() {
@@ -256,16 +272,15 @@
             const daily = parseInt(p.get('daily') || '0');
             isPrem = p.get('prem') === '1';
 
-            document.getElementById('msgs_left').innerText = isPrem ? "∞" : (total + daily);
-            document.getElementById('coins').innerText = p.get('coins') || '0';
-            document.getElementById('rank').innerText = isPrem ? "Королевский VIP" : "Путешественник";
+            document.getElementById('msgs_display').innerText = isPrem ? "∞" : (total + daily);
+            document.getElementById('coins_display').innerText = p.get('coins') || '0';
+            document.getElementById('rank_display').innerText = isPrem ? "👑 VIP" : "TRAVELER";
 
             if (p.get('name')) document.getElementById('user_name').value = p.get('name');
             if (p.get('role')) document.getElementById('user_role').value = p.get('role');
             if (p.get('set')) document.getElementById('setting').value = p.get('set');
 
             sync('msg_len', p.get('mlen') || 2);
-            sync('predictability', p.get('pred') || 2);
             sync('passion_lvl', p.get('pass') || 1);
             
             if (p.get('nsfw') === '1') {
@@ -278,9 +293,7 @@
             val = parseInt(val);
             choices[key] = val;
             const container = document.getElementById(key);
-            container.querySelectorAll('.btn-choice').forEach((b, i) => {
-                b.classList.toggle('active', i + 1 === val);
-            });
+            container.querySelectorAll('.btn-choice').forEach((b, i) => b.classList.toggle('active', i + 1 === val));
             document.getElementById('hint_' + key).innerText = hints[key][val];
         }
 
@@ -291,14 +304,14 @@
 
         function handleMaxi(el) {
             if (!isPrem) {
-                tg.showPopup({ title: 'Режим Макси', message: 'Доступен только для VIP.', buttons: [{type: 'ok', text: 'Понятно'}] });
-            } else {
-                setChoice('passion_lvl', 3, el);
-            }
+                tg.showPopup({ title: 'Выбор Судьбы', message: 'Режим "Макси" доступен только для VIP.', buttons: [{type: 'ok', text: 'Понятно'}] });
+            } else { setChoice('passion_lvl', 3, el); }
         }
 
         function toggleNSFW() {
-            document.getElementById('passion_block').style.display = document.getElementById('nsfw_mode').checked ? 'block' : 'none';
+            const on = document.getElementById('nsfw_mode').checked;
+            document.getElementById('nsfw_options').style.display = on ? 'block' : 'none';
+            document.getElementById('hint_passion_lvl').style.display = on ? 'block' : 'none';
         }
 
         function switchTab(tab, el) {
@@ -315,7 +328,7 @@
                 user_role: document.getElementById('user_role').value,
                 setting: document.getElementById('setting').value,
                 msg_len: choices.msg_len,
-                predictability: choices.predictability,
+                predictability: 2,
                 is_nsfw: document.getElementById('nsfw_mode').checked,
                 passion_lvl: choices.passion_lvl
             };
@@ -324,26 +337,22 @@
 
         function buy(item) { tg.sendData(JSON.stringify({action: 'buy', item: item})); }
 
-        // Анимация фона
-        function initBg() {
-            const container = document.getElementById('bg-canvas');
-            const colors = ['#d4af37', '#4dabf7'];
-            for(let i=0; i<15; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                const size = Math.random() * 4 + 2;
-                p.style.width = p.style.height = size + 'px';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.top = Math.random() * 100 + '%';
-                p.style.background = colors[Math.floor(Math.random()*2)];
-                p.style.animationDuration = (Math.random() * 10 + 5) + 's';
-                p.style.animationDelay = (Math.random() * 5) + 's';
-                container.appendChild(p);
+        function initStars() {
+            const container = document.getElementById('stars');
+            for(let i=0; i<40; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                const size = Math.random() * 2 + 1 + 'px';
+                s.style.width = s.style.height = size;
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.setProperty('--d', Math.random() * 3 + 2 + 's');
+                container.appendChild(s);
             }
         }
 
         load();
-        initBg();
+        initStars();
     </script>
 </body>
 </html>
