@@ -3,267 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aimi AI — Личный кабинет</title>
+    <title>Aimi AI — Romance Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0f0c29;
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --accent-color: #7f5af0;
-            --text-color: #fffffe;
-            --button-grad: linear-gradient(135deg, #ff6b6b, #f06595);
-            --save-grad: linear-gradient(90deg, #8E2DE2, #4A00E0);
-            --toggle-bg: #f06595;
-            --gold: #ffd700;
+            --rc-teal: #1a5e63;
+            --rc-teal-light: #268d94;
+            --rc-gold: #d4af37;
+            --rc-dark: #0a1a1b;
+            --rc-choice-bg: linear-gradient(180deg, #2a7d83 0%, #164a4f 100%);
+            --rc-premium-bg: linear-gradient(180deg, #9e7538 0%, #5e431d 100%);
+            --text-color: #ffffff;
+            --glass-bg: rgba(10, 26, 27, 0.85);
+            --border-color: rgba(212, 175, 55, 0.3);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at center, #1a3c40 0%, #0a1a1b 100%);
+            background-attachment: fixed;
             color: var(--text-color);
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
-            min-height: 100vh;
-            -webkit-tap-highlight-color: transparent;
+            line-height: 1.4;
         }
 
-        /* Анимация звезд */
-        .sparkles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
-        .sparkle { position: absolute; background: var(--gold); border-radius: 50%; opacity: 0; animation: fall linear infinite; }
-        @keyframes fall {
-            0% { transform: translate(0, -10vh) scale(0.5); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translate(-10vw, 110vh) scale(1.2); opacity: 0; }
+        /* Анимированный фон (лепестки/частицы) */
+        .particles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
 
-        .container { position: relative; z-index: 1; padding: 20px; padding-bottom: 120px; }
+        .container { position: relative; z-index: 1; padding: 15px; padding-bottom: 100px; }
 
-        .header { text-align: center; margin-bottom: 25px; }
+        .header { text-align: center; margin: 20px 0; }
         .logo { 
-            font-size: 32px; font-weight: 800; 
-            background: linear-gradient(to right, #ff9a9e, #fad0c4); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            font-size: 28px; font-weight: bold; font-variant: small-caps;
+            letter-spacing: 2px;
+            color: var(--rc-gold);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        /* Карточки */
+        /* Баланс в стиле КР */
+        .wallet-card {
+            display: flex; justify-content: space-around;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 50px; padding: 10px; margin-bottom: 20px;
+        }
+        .wallet-item { display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        .icon-diamond { color: #57c1ff; font-size: 18px; }
+        .icon-tea { color: #ff5757; font-size: 18px; }
+
+        /* Карточки-диалоги */
         .glass-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px; padding: 20px; margin-bottom: 16px;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--rc-gold);
+            border-radius: 12px; padding: 18px; margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        /* Хвостик как у облака диалога */
+        .glass-card::after {
+            content: ''; position: absolute; left: 20px; bottom: -10px;
+            border-left: 10px solid transparent; border-right: 10px solid transparent;
+            border-top: 10px solid var(--glass-bg);
         }
 
-        /* Кошелек */
-        .wallet-card {
-            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.02));
-            border: 1px solid rgba(255,215,0,0.3);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        h2 { font-size: 17px; margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px; opacity: 0.9; }
-        label { display: block; margin-bottom: 8px; font-size: 13px; opacity: 0.7; margin-left: 4px; }
+        h2 { font-size: 16px; color: var(--rc-gold); text-transform: uppercase; letter-spacing: 1px; margin-top: 0; }
 
         input[type="text"], textarea {
-            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px; padding: 14px; color: white; box-sizing: border-box;
-            margin-bottom: 15px; font-size: 15px; outline: none; transition: 0.3s;
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; padding: 12px; color: white; font-size: 15px; outline: none;
+            margin-top: 5px; margin-bottom: 10px;
         }
-        input:focus, textarea:focus { border-color: var(--accent-color); }
 
-        /* Группы кнопок */
-        .button-group {
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
-            background: rgba(0,0,0,0.2); padding: 4px; border-radius: 16px; margin-bottom: 8px;
-        }
+        /* Кнопки ВЫБОРА (Choice buttons) */
+        .button-group { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        
         .choice-btn {
-            background: transparent; border: none; color: rgba(255,255,255,0.5);
-            padding: 12px 5px; border-radius: 12px; font-size: 12px; font-weight: 600;
-            cursor: pointer; transition: 0.3s;
+            background: var(--rc-choice-bg);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px; color: white;
+            padding: 14px; font-size: 15px; font-weight: 500;
+            text-align: center; cursor: pointer; transition: 0.2s;
+            position: relative; overflow: hidden;
         }
-        .choice-btn.active { background: var(--button-grad); color: white; box-shadow: 0 4px 15px rgba(240, 101, 149, 0.3); }
+        .choice-btn.active {
+            border: 1.5px solid var(--rc-gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            font-weight: bold;
+        }
+        .choice-btn:active { transform: scale(0.98); }
 
-        .desc-text { font-size: 11px; opacity: 0.5; margin: 0 0 15px 4px; line-height: 1.3; }
+        /* Специальная кнопка Макси */
+        .maxi-btn { background: var(--rc-premium-bg) !important; color: #fff; border: 1px solid #ffcc00; }
 
         /* Переключатель */
         .toggle-container {
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(0,0,0,0.2); padding: 15px; border-radius: 16px;
+            background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px;
         }
-        .switch { position: relative; width: 50px; height: 28px; }
+        .switch { position: relative; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.1); transition: .4s; border-radius: 34px;
+            background: #444; transition: .3s; border-radius: 34px;
         }
         .slider:before {
-            position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px;
-            background: white; transition: .4s; border-radius: 50%;
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background: white; transition: .3s; border-radius: 50%;
         }
-        input:checked + .slider { background: var(--toggle-bg); }
-        input:checked + .slider:before { transform: translateX(22px); }
+        input:checked + .slider { background: var(--rc-teal-light); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Кнопки действий */
+        /* Нижняя кнопка сохранения */
+        .save-bar {
+            position: fixed; bottom: 70px; left: 0; width: 100%;
+            padding: 0 15px; box-sizing: border-box; z-index: 100;
+        }
         .save-btn {
-            background: var(--save-grad); color: white; width: 100%; padding: 18px;
-            border-radius: 20px; border: none; font-weight: 700; font-size: 16px;
-            box-shadow: 0 5px 20px rgba(74, 0, 224, 0.4); cursor: pointer; transition: 0.2s;
-        }
-        .save-btn:active { transform: scale(0.96); opacity: 0.8; }
-
-        .buy-btn {
-            background: rgba(255,255,255,0.1); border: none; color: white;
-            padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: bold;
-        }
-
-        .ref-card {
-            background: linear-gradient(135deg, rgba(127, 90, 240, 0.2), rgba(0,0,0,0.2));
-            border: 1px solid rgba(127, 90, 240, 0.3);
+            background: var(--rc-choice-bg); border: 2px solid var(--rc-gold);
+            color: var(--rc-gold); width: 100%; padding: 16px;
+            border-radius: 10px; font-weight: bold; font-size: 16px;
+            text-transform: uppercase; letter-spacing: 2px;
         }
 
         /* Навигация */
         .nav-bar {
-            position: fixed; bottom: 20px; left: 20px; right: 20px;
-            background: rgba(15, 12, 41, 0.95); backdrop-filter: blur(20px);
-            border-radius: 25px; display: flex; padding: 8px;
-            border: 1px solid rgba(255,255,255,0.1); z-index: 100;
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #050d0e; display: flex; border-top: 1px solid var(--border-color);
+            z-index: 101;
         }
         .nav-item {
-            flex: 1; text-align: center; color: rgba(255,255,255,0.4);
-            text-decoration: none; font-size: 11px; padding: 8px 0; transition: 0.3s;
+            flex: 1; text-align: center; color: #666;
+            padding: 12px 0; font-size: 12px; text-decoration: none;
         }
-        .nav-item.active { color: white; opacity: 1; }
+        .nav-item.active { color: var(--rc-gold); }
         .nav-icon { font-size: 20px; display: block; margin-bottom: 2px; }
 
-        .tab-content { display: none; animation: slideUp 0.3s ease-out; }
+        .tab-content { display: none; animation: fadeIn 0.4s; }
         .tab-content.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* Магазин */
         .shop-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 16px; background: rgba(255,255,255,0.03);
-            border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);
+            padding: 15px; border-bottom: 1px solid rgba(212,175,55,0.1);
         }
+        .price-tag { background: var(--rc-gold); color: black; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
-    <div class="sparkles" id="sparkles"></div>
+    <div class="particles" id="particles"></div>
 
     <div class="container">
         <div class="header">
-            <div class="logo">Aimi AI</div>
-            <p style="opacity: 0.5; font-size: 12px;">Твой личный мир историй</p>
+            <div class="logo">Aimi: Interactive Stories</div>
         </div>
 
-        <!-- Баланс (Кошелек) -->
-        <div class="glass-card wallet-card">
-            <div>
-                <div style="font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;">Баланс</div>
-                <div style="font-size: 18px; font-weight: 800;" id="msgs_left_display">...</div>
+        <!-- Верхняя панель статов -->
+        <div class="wallet-card">
+            <div class="wallet-item">
+                <span class="icon-tea">☕</span> <span id="daily_left">...</span>
             </div>
-            <div style="text-align: right;">
-                <div style="font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;">Монеты</div>
-                <div style="font-size: 18px; font-weight: 800; color: var(--gold);" id="coins_display">0 🪙</div>
+            <div class="wallet-item">
+                <span class="icon-diamond">💎</span> <span id="coins_display">0</span>
+            </div>
+            <div class="wallet-item" id="status_display" style="color: var(--rc-gold); font-size: 12px;">
+                PLAYER
             </div>
         </div>
 
-        <!-- ВКЛАДКА: НАСТРОЙКИ -->
+        <!-- ТАБ: НАСТРОЙКИ -->
         <div id="settings-tab" class="tab-content active">
             <div class="glass-card">
-                <h2>👤 Твой образ</h2>
-                <label>Как тебя называть?</label>
-                <input type="text" id="user_name" placeholder="Твое имя...">
-                <label>Твоя роль в сюжете</label>
-                <input type="text" id="user_role" placeholder="Напр: Студентка, Искатель приключений...">
+                <h2>Персонализация Героя</h2>
+                <label style="font-size: 12px; opacity: 0.7;">Имя главного героя</label>
+                <input type="text" id="user_name" placeholder="Введите имя...">
+                <label style="font-size: 12px; opacity: 0.7;">Ваша роль в этой главе</label>
+                <input type="text" id="user_role" placeholder="Напр: Хранительница...">
             </div>
 
             <div class="glass-card">
-                <h2>💬 Стиль диалога</h2>
-                <label>Длина ответов персонажа</label>
+                <h2>Повествование</h2>
+                <label style="font-size: 13px;">Объем описаний:</label>
                 <div class="button-group" id="msg_len">
-                    <button class="choice-btn" onclick="setChoice('msg_len', 1, this)">Короткие</button>
-                    <button class="choice-btn" onclick="setChoice('msg_len', 2, this)">Средние</button>
-                    <button class="choice-btn" onclick="setChoice('msg_len', 3, this)">Книжные</button>
+                    <div class="choice-btn" onclick="setChoice('msg_len', 1, this)">Лаконичные диалоги</div>
+                    <div class="choice-btn" onclick="setChoice('msg_len', 2, this)">Художественный баланс</div>
+                    <div class="choice-btn" onclick="setChoice('msg_len', 3, this)">Литературный роман</div>
                 </div>
-                <p class="desc-text" id="desc_msg_len">Выберите комфортный темп чтения.</p>
-
-                <label>Развитие сюжета</label>
-                <div class="button-group" id="predictability">
-                    <button class="choice-btn" onclick="setChoice('predictability', 1, this)">Логичный</button>
-                    <button class="choice-btn" onclick="setChoice('predictability', 2, this)">Баланс</button>
-                    <button class="choice-btn" onclick="setChoice('predictability', 3, this)">Безумный</button>
-                </div>
-                <p class="desc-text" id="desc_predictability">Насколько неожиданными будут повороты судьбы.</p>
             </div>
 
             <div class="glass-card">
-                <h2>🔞 Атмосфера</h2>
+                <h2>Сюжетные повороты</h2>
+                <label style="font-size: 13px;">Предсказуемость событий:</label>
+                <div class="button-group" id="predictability">
+                    <div class="choice-btn" onclick="setChoice('predictability', 1, this)">Логичное развитие</div>
+                    <div class="choice-btn" onclick="setChoice('predictability', 2, this)">Драматические витки</div>
+                    <div class="choice-btn" onclick="setChoice('predictability', 3, this)">Хаос и безумие</div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h2>Интимность и Тон</h2>
                 <div class="toggle-container">
-                    <span>Режим для взрослых (18+)</span>
+                    <span>Режим Романтики (18+)</span>
                     <label class="switch">
                         <input type="checkbox" id="nsfw_mode" onchange="togglePassionVisibility()">
                         <span class="slider"></span>
                     </label>
                 </div>
 
-                <div id="passion_block" style="display: none; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                    <label>Градус чувственности</label>
+                <div id="passion_block" style="display: none; margin-top: 15px;">
+                    <label style="font-size: 13px;">Уровень страсти:</label>
                     <div class="button-group" id="passion_lvl">
-                        <button class="choice-btn" onclick="setChoice('passion_lvl', 1, this)">Нежно</button>
-                        <button class="choice-btn" onclick="setChoice('passion_lvl', 2, this)">Горячо</button>
-                        <button class="choice-btn" onclick="handleMaxiClick(this)">Макси 🔥</button>
+                        <div class="choice-btn" onclick="setChoice('passion_lvl', 1, this)">Чувственный шепот</div>
+                        <div class="choice-btn" onclick="setChoice('passion_lvl', 2, this)">Яркое пламя</div>
+                        <div class="choice-btn maxi-btn" onclick="handleMaxiClick(this)">Запретное желание 🔥</div>
                     </div>
                 </div>
             </div>
 
             <div class="glass-card">
-                <h2>🗺️ Окружение</h2>
-                <label>Текущий сеттинг (мир)</label>
-                <textarea id="setting" rows="3" placeholder="Опиши, где ты находишься..."></textarea>
+                <h2>Место действия</h2>
+                <textarea id="setting" rows="2" placeholder="Опишите декорации вашей истории..."></textarea>
             </div>
 
-            <button class="save-btn" onclick="saveData()">💾 Сохранить изменения</button>
+            <div class="save-bar">
+                <button class="save-btn" onclick="saveData()">Продолжить историю</button>
+            </div>
         </div>
 
-        <!-- ВКЛАДКА: МАГАЗИН -->
+        <!-- ТАБ: МАГАЗИН -->
         <div id="shop-tab" class="tab-content">
-            <div class="glass-card ref-card">
-                <h2>👥 Пригласи друга</h2>
-                <p style="font-size: 13px; opacity: 0.8; margin-bottom: 15px;">
-                    Отправь другу ссылку и получи <b>50 монет</b> за каждого новичка!
-                </p>
-                <button class="save-btn" style="padding: 12px; font-size: 14px; background: var(--accent-color);" onclick="copyRefLink()">
-                    🔗 Копировать ссылку
-                </button>
-            </div>
-
             <div class="glass-card">
-                <h2>💎 Пополнить баланс</h2>
-                
+                <h2>Ваша Сокровищница</h2>
                 <div class="shop-item">
-                    <div>
-                        <div style="font-weight: bold;">Горсть монет</div>
-                        <div style="font-size: 11px; opacity: 0.5;">100 Aimi Coins</div>
-                    </div>
-                    <button class="buy-btn" onclick="buy(100)">50 ⭐</button>
+                    <span>Шкатулка алмазов (100)</span>
+                    <div class="price-tag" onclick="buy(100)">50 ⭐</div>
                 </div>
-
                 <div class="shop-item">
-                    <div>
-                        <div style="font-weight: bold;">Мешочек золота</div>
-                        <div style="font-size: 11px; opacity: 0.5;">500 Aimi Coins</div>
-                    </div>
-                    <button class="buy-btn" onclick="buy(500)">200 ⭐</button>
+                    <span>Сундук богатств (500)</span>
+                    <div class="price-tag" onclick="buy(500)">200 ⭐</div>
                 </div>
-
-                <div class="shop-item" style="background: linear-gradient(90deg, rgba(255,215,0,0.1), transparent);">
-                    <div>
-                        <div style="font-weight: bold; color: var(--gold);">Вечный VIP</div>
-                        <div style="font-size: 11px; opacity: 0.5;">Безлимит навсегда</div>
-                    </div>
-                    <button class="buy-btn" style="background: var(--gold); color: black;" onclick="buy('vip')">500 ⭐</button>
+                <div class="shop-item">
+                    <span style="color: var(--rc-gold);">Королевский VIP (Безлимит)</span>
+                    <div class="price-tag" onclick="buy('vip')">500 ⭐</div>
                 </div>
             </div>
         </div>
@@ -271,58 +272,45 @@
 
     <!-- Навигация -->
     <div class="nav-bar">
-        <a href="#" class="nav-item active" onclick="switchTab('settings', this)">
-            <span class="nav-icon">⚙️</span>Профиль
-        </a>
-        <a href="#" class="nav-item" onclick="switchTab('shop', this)">
-            <span class="nav-icon">🛍️</span>Магазин
-        </a>
+        <div class="nav-item active" onclick="switchTab('settings', this)">
+            <span class="nav-icon">📖</span>Сюжет
+        </div>
+        <div class="nav-item" onclick="switchTab('shop', this)">
+            <span class="nav-icon">💎</span>Лавка
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.backgroundColor = '#050d0e';
+        tg.headerColor = '#050d0e';
 
-        let choices = { msg_len: 2, predictability: 2, saturation: 2, passion_lvl: 1 };
-        let userIsPremium = false;
-        let userId = 0;
-
-        const descriptions = {
-            msg_len: { 1: "Коротко и ясно.", 2: "Оптимальный объем.", 3: "Глубокое погружение (VIP)." },
-            predictability: { 1: "Все идет по плану.", 2: "Умеренные сюрпризы.", 3: "Полный хаос и драйв." }
-        };
+        let choices = { msg_len: 2, predictability: 2, passion_lvl: 1 };
+        let isPremium = false;
 
         function loadParams() {
             const urlParams = new URLSearchParams(window.location.search);
-            userId = urlParams.get('id') || 0;
             
-            // Балансы
+            // Заполнение балансов
             const total = parseInt(urlParams.get('total') || '0');
             const daily = parseInt(urlParams.get('daily') || '0');
             const coins = parseInt(urlParams.get('coins') || '0');
-            const isPrem = urlParams.get('prem') === '1';
-            const vipLeft = urlParams.get('vip') || '400';
-            
-            userIsPremium = isPrem;
-            document.getElementById('coins_display').innerText = `${coins} 🪙`;
-            
-            if (isPrem) {
-                document.getElementById('msgs_left_display').innerText = `Безлимит (${vipLeft})`;
-                document.getElementById('status_display').innerText = "👑 PREMIUM";
-            } else {
-                document.getElementById('msgs_left_display').innerText = `${total + daily} сообщений`;
-                document.getElementById('status_display').innerText = "Обычный";
-            }
+            isPremium = urlParams.get('prem') === '1';
 
-            // Данные профиля из URL
+            document.getElementById('daily_left').innerText = isPremium ? "∞" : (total + daily);
+            document.getElementById('coins_display').innerText = coins;
+            document.getElementById('status_display').innerText = isPremium ? "👑 VIP GUEST" : "TRAVELER";
+
+            // Заполнение полей
             if (urlParams.get('name')) document.getElementById('user_name').value = urlParams.get('name');
             if (urlParams.get('role')) document.getElementById('user_role').value = urlParams.get('role');
             if (urlParams.get('set')) document.getElementById('setting').value = urlParams.get('set');
             
-            // Кнопки (msg_len, pred и т.д.)
-            updateActiveButtons('msg_len', urlParams.get('mlen') || 2);
-            updateActiveButtons('predictability', urlParams.get('pred') || 2);
-            updateActiveButtons('passion_lvl', urlParams.get('pass') || 1);
+            // Активация кнопок
+            syncButtons('msg_len', urlParams.get('mlen') || 2);
+            syncButtons('predictability', urlParams.get('pred') || 2);
+            syncButtons('passion_lvl', urlParams.get('pass') || 1);
             
             if (urlParams.get('nsfw') === '1') {
                 document.getElementById('nsfw_mode').checked = true;
@@ -330,24 +318,21 @@
             }
         }
 
-        function updateActiveButtons(key, val) {
+        function syncButtons(key, val) {
             val = parseInt(val);
             choices[key] = val;
             const container = document.getElementById(key);
-            if (!container) return;
             const btns = container.querySelectorAll('.choice-btn');
             btns.forEach((btn, idx) => {
                 if (idx + 1 === val) btn.classList.add('active');
-                else btn.classList.remove('active');
             });
-            if (descriptions[key]) document.getElementById('desc_' + key).innerText = descriptions[key][val];
         }
 
         function setChoice(key, val, el) {
             choices[key] = val;
             el.parentElement.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
-            if (descriptions[key]) document.getElementById('desc_' + key).innerText = descriptions[key][val];
+            tg.HapticFeedback.impactOccurred('light');
         }
 
         function togglePassionVisibility() {
@@ -356,25 +341,22 @@
         }
 
         function handleMaxiClick(el) {
-            setChoice('passion_lvl', 3, el);
-            if (!userIsPremium) {
+            if (!isPremium) {
                 tg.showPopup({
-                    title: 'Режим "Макси"',
-                    message: 'Максимальная откровенность доступна только владельцам VIP статуса.',
+                    title: 'Выбор за Алмазы',
+                    message: 'Этот уровень страсти доступен только обладателям VIP-статуса.',
                     buttons: [{type: 'ok', text: 'Понятно'}]
                 });
+            } else {
+                setChoice('passion_lvl', 3, el);
             }
         }
 
-        function copyRefLink() {
-            const link = `https://t.me/Aimi_Bot_Username?start=ref${userId}`; // Замени на имя своего бота
-            const el = document.createElement('textarea');
-            el.value = link;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            tg.showAlert("Ссылка скопирована! Отправь её другу.");
+        function switchTab(tab, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            el.classList.add('active');
         }
 
         function saveData() {
@@ -385,44 +367,32 @@
                 setting: document.getElementById('setting').value,
                 msg_len: choices.msg_len,
                 predictability: choices.predictability,
-                saturation: choices.saturation,
                 is_nsfw: document.getElementById('nsfw_mode').checked,
                 passion_lvl: choices.passion_lvl
             };
             tg.sendData(JSON.stringify(data));
-            tg.close();
-        }
-
-        function switchTab(tab, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(tab + '-tab').classList.add('active');
-            el.classList.add('active');
         }
 
         function buy(item) {
             tg.sendData(JSON.stringify({action: 'buy', item: item}));
         }
 
-        function createSparkles() {
-            const container = document.getElementById('sparkles');
-            for(let i=0; i<30; i++) {
-                let s = document.createElement('div');
-                s.className = 'sparkle';
-                s.style.left = Math.random() * 100 + '%';
-                s.style.top = Math.random() * 100 + '%';
-                s.style.animationDelay = Math.random() * 5 + 's';
-                s.style.animationDuration = Math.random() * 3 + 4 + 's';
-                let size = Math.random() * 3 + 2 + 'px';
-                s.style.width = size; s.style.height = size;
-                container.appendChild(s);
+        // Эффект лепестков/частиц
+        function initParticles() {
+            const container = document.getElementById('particles');
+            for(let i=0; i<15; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.width = p.style.height = (Math.random() * 5 + 2) + 'px';
+                p.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                p.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(p);
             }
         }
 
         loadParams();
-        createSparkles();
+        initParticles();
     </script>
 </body>
 </html>
-
-
