@@ -3,267 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aimi AI — Личный Кабинет</title>
+    <title>Aimi AI — Настройки судьбы</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-deep: #050608;
-            --glass: rgba(20, 24, 35, 0.8);
+            --bg: #05070a;
+            --card-glass: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
             --accent-yellow: #FFD700;
-            --accent-blue: #00E5FF;
-            --text-main: #FFFFFF;
-            --text-dim: #B0BCCF;
-            --border-glow: rgba(0, 229, 255, 0.3);
-            --gold-glow: rgba(255, 215, 0, 0.4);
+            --accent-blue: #00D1FF;
+            --text: #ffffff;
+            --text-muted: #8e9297;
+            --nsfw-red: #ff4d4d;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0; padding: 0;
             overflow-x: hidden;
-            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* МАГИЧЕСКИЙ ФОН */
-        .bg-wrapper {
+        /* ФОН С ЖИВЫМИ ЗВЕЗДАМИ */
+        .space-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; background: radial-gradient(circle at 50% 50%, #101625 0%, #050608 100%);
+            z-index: 0; background: radial-gradient(circle at 50% 0%, #111827 0%, #05070a 100%);
         }
         .star {
-            position: absolute; background: white; border-radius: 50%;
-            opacity: 0.5; animation: twinkle var(--d) infinite ease-in-out;
+            position: absolute; background: #fff; border-radius: 50%;
+            opacity: 0.3; animation: blink var(--d) infinite;
         }
-        @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.2); } }
+        @keyframes blink { 0%, 100% { opacity: 0.1; } 50% { opacity: 0.6; } }
 
-        .container { position: relative; z-index: 1; padding: 15px; padding-bottom: 110px; }
+        .container { position: relative; z-index: 1; padding: 20px; padding-bottom: 100px; }
 
         /* HEADER */
-        .header { text-align: center; margin: 15px 0; }
+        .header { text-align: center; margin-bottom: 24px; }
         .logo { 
-            font-size: 32px; font-weight: 900; 
-            background: linear-gradient(135deg, var(--accent-yellow) 20%, var(--accent-blue));
+            font-size: 32px; font-weight: 800; letter-spacing: -1px;
+            background: linear-gradient(to right, var(--accent-yellow), var(--accent-blue));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: 1px; filter: drop-shadow(0 0 10px rgba(0,229,255,0.2));
         }
-        .motto { font-size: 11px; color: var(--accent-blue); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; opacity: 0.8; }
+        .status-pill {
+            display: inline-block; padding: 4px 12px; border-radius: 100px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border);
+            font-size: 11px; color: var(--accent-yellow); margin-top: 8px; text-transform: uppercase;
+        }
 
-        /* STATS BAR */
-        .stats-bar {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;
+        /* DASHBOARD (Статистика) */
+        .dashboard {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;
         }
-        .stat-card {
-            background: var(--glass); backdrop-filter: blur(10px);
-            border: 1px solid var(--border-glow); border-radius: 14px;
-            padding: 10px; text-align: center;
+        .dash-card {
+            background: var(--card-glass); backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border); border-radius: 20px;
+            padding: 16px; text-align: center;
         }
-        .stat-card b { display: block; font-size: 18px; color: #fff; }
-        .stat-card span { font-size: 9px; color: var(--accent-yellow); text-transform: uppercase; }
+        .dash-card small { display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
+        .dash-card span { font-size: 20px; font-weight: 700; color: #fff; }
 
-        /* CARDS (RC + Charmy Mix) */
-        .card {
-            background: var(--glass); backdrop-filter: blur(15px);
-            border: 1px solid var(--border-glow); border-radius: 20px;
-            padding: 20px; margin-bottom: 20px; position: relative;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        /* CARDS (Dialogue Style) */
+        .glass-card {
+            background: var(--card-glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border); border-radius: 24px;
+            padding: 24px; margin-bottom: 20px; position: relative;
         }
-        .card::after { /* Хвостик диалога КР */
+        .glass-card::after { /* Хвостик как в КР */
             content: ''; position: absolute; left: 30px; bottom: -10px;
-            border-left: 12px solid transparent; border-right: 12px solid transparent;
-            border-top: 12px solid rgba(20, 24, 35, 0.8);
+            width: 20px; height: 10px; background: var(--bg);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            border-top: 1px solid var(--card-border);
         }
 
-        h2 { font-size: 14px; color: var(--accent-yellow); text-transform: uppercase; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px; }
+        h2 { font-size: 16px; margin: 0 0 16px 0; font-weight: 600; color: var(--accent-blue); }
+        .input-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; display: block; }
 
         input, textarea {
-            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 12px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box;
+            width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border);
+            border-radius: 12px; padding: 14px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box;
+            transition: 0.2s;
         }
-        input:focus { border-color: var(--accent-blue); box-shadow: 0 0 10px var(--border-glow); }
+        input:focus { border-color: var(--accent-blue); background: rgba(255, 255, 255, 0.06); }
 
-        /* BUTTON GROUPS */
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
-        .btn-choice {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px; padding: 12px 5px; color: #fff; text-align: center;
-            font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.3s;
+        /* CHOICE BUTTONS */
+        .choice-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+        .choice-item {
+            padding: 16px; border-radius: 14px; background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border); color: #fff; text-align: center;
+            font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s;
         }
-        .btn-choice.active {
+        .choice-item.active {
             background: var(--accent-yellow); color: #000; border-color: var(--accent-yellow);
-            box-shadow: 0 0 15px var(--gold-glow);
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2);
         }
 
-        .hint-box {
-            background: rgba(0, 229, 255, 0.05); border-radius: 10px;
-            padding: 10px; margin-top: 12px; font-size: 11px; color: var(--text-dim);
-            line-height: 1.4; border-left: 2px solid var(--accent-blue);
+        .hint-text {
+            font-size: 12px; color: var(--text-muted); margin-top: 12px;
+            padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 10px;
+            line-height: 1.5; border-left: 2px solid var(--accent-blue);
         }
 
         /* TOGGLE */
-        .toggle-row { display: flex; justify-content: space-between; align-items: center; }
-        .switch { position: relative; width: 44px; height: 22px; }
+        .row-between { display: flex; justify-content: space-between; align-items: center; }
+        .switch { position: relative; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background: #333; transition: .4s; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+            background: #27272a; transition: .3s; border-radius: 100px;
         }
         .slider:before {
-            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 2px;
-            background: #fff; transition: .4s; border-radius: 50%;
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background: white; transition: .3s; border-radius: 50%;
         }
-        input:checked + .slider { background: linear-gradient(90deg, #FF5F6D, #FFC371); }
-        input:checked + .slider:before { transform: translateX(22px); }
+        input:checked + .slider { background: var(--nsfw-red); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
         /* SHOP */
         .shop-item {
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 15px; padding: 15px; margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border);
+            border-radius: 18px; padding: 18px; margin-bottom: 12px;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .shop-info b { color: var(--accent-yellow); font-size: 14px; display: block; }
-        .shop-info i { font-size: 11px; color: var(--text-dim); font-style: normal; }
-        .buy-btn {
+        .shop-item b { color: var(--accent-yellow); display: block; font-size: 15px; }
+        .shop-item span { font-size: 11px; color: var(--text-muted); }
+        .price-btn {
             background: var(--accent-blue); color: #000; border: none;
-            padding: 8px 14px; border-radius: 8px; font-weight: 800; font-size: 12px;
+            padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 13px;
         }
 
-        /* NAVIGATION */
-        .nav {
+        /* BOTTOM NAV */
+        .nav-bar {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(5, 6, 8, 0.95); backdrop-filter: blur(20px);
-            display: flex; border-top: 1px solid var(--border-glow); z-index: 100;
+            background: rgba(5, 7, 10, 0.8); backdrop-filter: blur(20px);
+            display: flex; border-top: 1px solid var(--card-border); z-index: 100;
         }
-        .nav-item {
-            flex: 1; text-align: center; color: #555; padding: 15px 0;
-            font-size: 10px; text-decoration: none; text-transform: uppercase; font-weight: 700;
+        .nav-tab {
+            flex: 1; text-align: center; padding: 18px 0;
+            color: var(--text-muted); text-decoration: none;
+            font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
         }
-        .nav-item.active { color: var(--accent-yellow); background: rgba(255, 215, 0, 0.05); }
+        .nav-tab.active { color: var(--accent-yellow); background: rgba(255, 215, 0, 0.03); }
 
+        /* BIG SAVE BUTTON */
         .save-btn {
-            background: linear-gradient(90deg, #00E5FF, #00A3FF); color: #000;
-            width: 100%; padding: 18px; border-radius: 15px; border: none;
-            font-weight: 900; font-size: 15px; text-transform: uppercase;
-            box-shadow: 0 4px 20px rgba(0, 229, 255, 0.4); margin-top: 10px;
+            background: linear-gradient(to right, var(--accent-blue), #0077ff);
+            color: #fff; width: 100%; padding: 20px; border-radius: 18px;
+            border: none; font-weight: 800; font-size: 16px; text-transform: uppercase;
+            box-shadow: 0 10px 25px rgba(0, 209, 255, 0.25); margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="bg-wrapper" id="stars"></div>
+    <div class="space-bg" id="stars"></div>
 
     <div class="container">
         <div class="header">
             <div class="logo">Aimi AI</div>
-            <div class="motto">Твоя история. Твой выбор.</div>
+            <div class="status-pill" id="user_rank">Обычный аккаунт</div>
         </div>
 
-        <div class="stats-bar">
-            <div class="stat-card">
-                <span id="rank_display" style="font-size: 9px; color: var(--accent-blue);">PLAYER</span>
-                <b id="msgs_display">...</b>
-                <span>Заряды (Энергия)</span>
+        <div class="dashboard">
+            <div class="dash-card">
+                <small>Ответы на сегодня</small>
+                <span id="msgs_val">...</span>
             </div>
-            <div class="stat-card">
-                <span style="font-size: 9px; color: var(--accent-blue);">БАЛАНС</span>
-                <b id="coins_display">0</b>
-                <span>Алмазы (💎)</span>
+            <div class="dash-card">
+                <small>Твой баланс</small>
+                <span id="coins_val">0 💎</span>
             </div>
         </div>
 
-        <!-- НАСТРОЙКИ -->
-        <div id="settings-tab" class="tab-content">
-            <div class="card">
-                <h2>👤 Профиль Героя</h2>
-                <label>Ваше Имя</label>
-                <input type="text" id="user_name" placeholder="Введите имя...">
-                <div style="margin-top: 15px;">
-                    <label>Ваша Роль</label>
-                    <input type="text" id="user_role" placeholder="Напр: Детектив, Студентка...">
+        <!-- ТАБ: НАСТРОЙКИ -->
+        <div id="settings-tab">
+            <div class="glass-card">
+                <h2>Твой персонаж</h2>
+                <span class="input-label">Имя, по которому к тебе будут обращаться</span>
+                <input type="text" id="user_name" placeholder="Например: Александра">
+                <div style="margin-top: 20px;">
+                    <span class="input-label">Твоя роль в сюжете (кто ты?)</span>
+                    <input type="text" id="user_role" placeholder="Например: Студентка академии">
                 </div>
             </div>
 
-            <div class="card">
-                <h2>📖 Повествование</h2>
-                <div class="btn-grid" id="msg_len">
-                    <div class="btn-choice" onclick="setChoice('msg_len', 1, this)">Кратко</div>
-                    <div class="btn-choice" onclick="setChoice('msg_len', 2, this)">Баланс</div>
-                    <div class="btn-choice" onclick="setChoice('msg_len', 3, this)">Роман</div>
+            <div class="glass-card">
+                <h2>Стиль повествования</h2>
+                <div class="choice-list" id="msg_len">
+                    <div class="choice-item" onclick="setChoice('msg_len', 1, this)">Короткие сообщения</div>
+                    <div class="choice-item" onclick="setChoice('msg_len', 2, this)">Художественный стиль</div>
+                    <div class="choice-item" onclick="setChoice('msg_len', 3, this)">Литературный роман</div>
                 </div>
-                <div class="hint-box" id="hint_msg_len">...</div>
+                <div class="hint-text" id="hint_msg_len">Выбери, насколько длинными должны быть ответы героя.</div>
             </div>
 
-            <div class="card">
-                <h2>🔥 Атмосфера 18+</h2>
-                <div class="toggle-row">
-                    <span>Режим Романтики</span>
+            <div class="glass-card">
+                <h2>Атмосфера истории</h2>
+                <div class="row-between">
+                    <span style="font-weight: 500;">Режим 18+</span>
                     <label class="switch">
                         <input type="checkbox" id="nsfw_mode" onchange="toggleNSFW()">
                         <span class="slider"></span>
                     </label>
                 </div>
-                <div id="nsfw_options" style="display:none; margin-top:15px;">
-                    <div class="btn-grid" id="passion_lvl">
-                        <div class="btn-choice" onclick="setChoice('passion_lvl', 1, this)">Легкий</div>
-                        <div class="btn-choice" onclick="setChoice('passion_lvl', 2, this)">Жаркий</div>
-                        <div class="btn-choice" onclick="handleMaxi(this)" style="border-color: #ff4d4d;">Макси 🔥</div>
+                
+                <div id="nsfw_box" style="display:none; margin-top:20px;">
+                    <div class="choice-list" id="passion_lvl">
+                        <div class="choice-item" onclick="setChoice('passion_lvl', 1, this)">Легкий (романтика)</div>
+                        <div class="choice-item" onclick="setChoice('passion_lvl', 2, this)">Жаркий (откровенно)</div>
+                        <div class="choice-item" onclick="handleMaxi(this)" id="maxi_btn">Макси (без цензуры) 🔥</div>
                     </div>
                 </div>
-                <div class="hint-box" id="hint_passion_lvl">Определяет уровень откровенности сцен.</div>
+                <div class="hint-text" id="hint_passion_lvl">Включает возможность откровенных сцен.</div>
             </div>
 
-            <div class="card">
-                <h2>🗺️ Окружение</h2>
-                <textarea id="setting" rows="2" placeholder="Опишите, где вы сейчас..."></textarea>
+            <div class="glass-card">
+                <h2>Место действия</h2>
+                <textarea id="setting" rows="2" placeholder="Опиши мир или комнату, где вы находитесь..."></textarea>
             </div>
 
-            <button class="save-btn" onclick="save()">Сохранить настройки</button>
+            <button class="save-btn" onclick="save()">💾 Сохранить изменения</button>
         </div>
 
-        <!-- МАГАЗИН -->
-        <div id="shop-tab" class="tab-content" style="display:none">
-            <div class="card">
-                <h2 style="justify-content: center;">💎 Алмазная Лавка</h2>
+        <!-- ТАБ: МАГАЗИН -->
+        <div id="shop-tab" style="display:none">
+            <div class="glass-card">
+                <h2 style="text-align:center">💎 Алмазная лавка</h2>
+                
                 <div class="shop-item">
-                    <div class="shop-info">
-                        <b>Горсть Алмазов (100)</b>
-                        <i>+100 дополнительных сообщений</i>
+                    <div>
+                        <b>Малый набор (100)</b>
+                        <span>+100 дополнительных сообщений</span>
                     </div>
-                    <button class="buy-btn" onclick="buy(100)">50 ⭐</button>
+                    <button class="price-btn" onclick="buy(100)">50 ⭐</button>
                 </div>
+
                 <div class="shop-item">
-                    <div class="shop-info">
-                        <b>Мешок Алмазов (500)</b>
-                        <i>Для самых длинных историй</i>
+                    <div>
+                        <b>Большой мешок (500)</b>
+                        <span>Для очень длинных историй</span>
                     </div>
-                    <button class="buy-btn" onclick="buy(500)">200 ⭐</button>
+                    <button class="price-btn" onclick="buy(500)">200 ⭐</button>
                 </div>
-                <div class="shop-item" style="border-color: var(--accent-yellow);">
-                    <div class="shop-info">
-                        <b style="color: var(--accent-yellow)">👑 Вечный VIP</b>
-                        <i>Безлимит и все слоты навсегда</i>
+
+                <div class="shop-item" style="border-color: var(--accent-yellow)">
+                    <div>
+                        <b style="color: var(--accent-yellow)">Королевский VIP</b>
+                        <span>Безлимит и все функции навсегда</span>
                     </div>
-                    <button class="buy-btn" style="background: var(--accent-yellow)" onclick="buy('vip')">500 ⭐</button>
+                    <button class="price-btn" style="background: var(--accent-yellow)" onclick="buy('vip')">500 ⭐</button>
                 </div>
             </div>
+            <p style="text-align:center; font-size:11px; color: var(--text-muted)">Твоя история. Твой выбор.</p>
         </div>
     </div>
 
-    <div class="nav">
-        <div class="nav-item active" onclick="switchTab('settings', this)">Настройки</div>
-        <div class="nav-item" onclick="switchTab('shop', this)">Магазин</div>
+    <!-- NAVIGATION -->
+    <div class="nav-bar">
+        <div class="nav-tab active" onclick="switchTab('settings', this)">Настройки</div>
+        <div class="nav-tab" onclick="switchTab('shop', this)">Магазин</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.headerColor = '#050608';
 
         let choices = { msg_len: 2, passion_lvl: 1 };
         let isPrem = false;
 
         const hints = {
-            msg_len: { 1: "Только суть и диалоги. Быстрый темп.", 2: "Художественное описание действий и чувств.", 3: "Глубокое погружение, длинные литературные ответы." },
-            passion_lvl: { 1: "Нежные чувства, взгляды и легкие касания.", 2: "Горячие сцены с детальным описанием близости.", 3: "Максимальная страсть, грубость и смелые эксперименты (VIP)." }
+            msg_len: { 1: "Минимум воды, только действия и быстрые диалоги.", 2: "Красивое описание чувств и окружения. Оптимально.", 3: "Длинные ответы в стиле настоящей книги." },
+            passion_lvl: { 1: "Акцент на нежных чувствах, взглядах и прикосновениях.", 2: "Детальное и горячее описание близости.", 3: "Максимальная страсть, смелые эксперименты и полное отсутствие цензуры. Только для VIP." }
         };
 
         function load() {
@@ -272,9 +282,10 @@
             const daily = parseInt(p.get('daily') || '0');
             isPrem = p.get('prem') === '1';
 
-            document.getElementById('msgs_display').innerText = isPrem ? "∞" : (total + daily);
-            document.getElementById('coins_display').innerText = p.get('coins') || '0';
-            document.getElementById('rank_display').innerText = isPrem ? "👑 VIP" : "TRAVELER";
+            // СУММИРУЕМ БОНУСНЫЙ БАЛАНС И ДНЕВНОЙ
+            document.getElementById('msgs_val').innerText = isPrem ? "∞" : (total + daily);
+            document.getElementById('coins_val').innerText = (p.get('coins') || '0') + ' 💎';
+            document.getElementById('user_rank').innerText = isPrem ? "Королевский VIP" : "Обычный аккаунт";
 
             if (p.get('name')) document.getElementById('user_name').value = p.get('name');
             if (p.get('role')) document.getElementById('user_role').value = p.get('role');
@@ -293,7 +304,7 @@
             val = parseInt(val);
             choices[key] = val;
             const container = document.getElementById(key);
-            container.querySelectorAll('.btn-choice').forEach((b, i) => b.classList.toggle('active', i + 1 === val));
+            container.querySelectorAll('.choice-item').forEach((b, i) => b.classList.toggle('active', i + 1 === val));
             document.getElementById('hint_' + key).innerText = hints[key][val];
         }
 
@@ -303,22 +314,32 @@
         }
 
         function handleMaxi(el) {
+            // ВСЕГДА обновляем описание, даже если нельзя выбрать
+            document.getElementById('hint_passion_lvl').innerText = hints.passion_lvl[3];
+            
             if (!isPrem) {
-                tg.showPopup({ title: 'Выбор Судьбы', message: 'Режим "Макси" доступен только для VIP.', buttons: [{type: 'ok', text: 'Понятно'}] });
-            } else { setChoice('passion_lvl', 3, el); }
+                tg.showPopup({ 
+                    title: 'Выбор Судьбы', 
+                    message: 'Режим "Макси" (без цензуры) доступен только обладателям VIP-статуса.', 
+                    buttons: [{type: 'ok', text: 'Понятно'}] 
+                });
+            } else {
+                setChoice('passion_lvl', 3, el);
+            }
         }
 
         function toggleNSFW() {
             const on = document.getElementById('nsfw_mode').checked;
-            document.getElementById('nsfw_options').style.display = on ? 'block' : 'none';
+            document.getElementById('nsfw_box').style.display = on ? 'block' : 'none';
             document.getElementById('hint_passion_lvl').style.display = on ? 'block' : 'none';
         }
 
         function switchTab(tab, el) {
             document.getElementById('settings-tab').style.display = tab === 'settings' ? 'block' : 'none';
             document.getElementById('shop-tab').style.display = tab === 'shop' ? 'block' : 'none';
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
+            tg.HapticFeedback.selectionChanged();
         }
 
         function save() {
@@ -328,7 +349,6 @@
                 user_role: document.getElementById('user_role').value,
                 setting: document.getElementById('setting').value,
                 msg_len: choices.msg_len,
-                predictability: 2,
                 is_nsfw: document.getElementById('nsfw_mode').checked,
                 passion_lvl: choices.passion_lvl
             };
@@ -339,14 +359,14 @@
 
         function initStars() {
             const container = document.getElementById('stars');
-            for(let i=0; i<40; i++) {
+            for(let i=0; i<50; i++) {
                 const s = document.createElement('div');
                 s.className = 'star';
                 const size = Math.random() * 2 + 1 + 'px';
                 s.style.width = s.style.height = size;
                 s.style.left = Math.random() * 100 + '%';
                 s.style.top = Math.random() * 100 + '%';
-                s.style.setProperty('--d', Math.random() * 3 + 2 + 's');
+                s.style.setProperty('--d', Math.random() * 4 + 2 + 's');
                 container.appendChild(s);
             }
         }
